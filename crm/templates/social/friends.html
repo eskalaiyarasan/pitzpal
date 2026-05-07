@@ -2,8 +2,13 @@
 {% block title %}Search for  friends {% endblock %}
 
 {% block content %}
-{% for friend in friends %}
-  <p>{{ friend.username }}</p>
-{% endfor %}
-
+<div class="card border-primary">
+    <ul class="list-group list-group-flush">
+        {% for friend in friends %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <p>{{ friend.username }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}

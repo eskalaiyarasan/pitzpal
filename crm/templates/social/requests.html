@@ -4,12 +4,12 @@
 {% block content %}
 <h2>Received Friend Requests</h2>
 {% for req in requests %}
-    <div>
-        <p><strong>{{ req.from_user.username }}</strong> sent you a friend request!</p>
-        <div>
-            <p><a href="{% url 'accept_request' req.id %}">Accept</a> </p>
-            <p><a href="{% url 'reject_request' req.id %}">Reject</a> </p>
-        </div>
+    <div class="card border-primary">
+        <tr><strong>{{ req.from_user.username }}</strong> sent you a friend request!</tr>
+        <tr>
+            <th><a href="{% url 'accept_request' req.id %}">Accept</a> </th>
+            <th><a href="{% url 'reject_request' req.id %}">Reject</a> </th>
+        </tr>
     </div>
 {% empty %}
     <p>No new friend requests.</p>
