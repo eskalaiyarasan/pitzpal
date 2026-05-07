@@ -1,0 +1,17 @@
+{% extends 'common/base.html' %}
+{% block title %} Action on Friends : allow/deny {% endblock %}
+
+{% block content %}
+<h2>Received Friend Requests</h2>
+{% for req in requests %}
+    <div>
+        <p><strong>{{ req.from_user.username }}</strong> sent you a friend request!</p>
+        <div>
+            <p><a href="{% url 'accept_request' req.id %}">Accept</a> </p>
+            <p><a href="{% url 'reject_request' req.id %}">Reject</a> </p>
+        </div>
+    </div>
+{% empty %}
+    <p>No new friend requests.</p>
+{% endfor %}
+{% endblock %}

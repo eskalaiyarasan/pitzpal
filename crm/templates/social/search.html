@@ -1,0 +1,15 @@
+{% extends 'common/base.html' %}
+{% block title %}Search for  friends {% endblock %}
+
+{% block content %}
+<form method="GET">
+  <input type="text" name="q" placeholder="Search user">
+</form>
+
+{% for user in results %}
+  <p>
+    {{ user.username }}
+    <a href="{% url 'send_request' user.id %}">Send Request</a>
+  </p>
+{% endfor %}
+{% endblock %}

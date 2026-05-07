@@ -1,0 +1,9 @@
+{% extends 'common/base.html' %}
+{% block title %}Search for  friends {% endblock %}
+
+{% block content %}
+{% for friend in friends %}
+  <p>{{ friend.username }}</p>
+{% endfor %}
+
+{% endblock %}
