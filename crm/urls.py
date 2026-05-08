@@ -28,12 +28,11 @@ urlpatterns = [
         name="login",
     ),
     path("signup/", views.signup_view, name="signup"),
-
-    path('search/', views.search_users, name='search'),
-    path('send/<int:user_id>/', views.send_request, name='send_request'),
-    path('requests/', views.friend_requests, name='friend_requests'),
-    path('accept/<int:request_id>/', views.accept_request, name='accept_request'),
-    path('reject/<int:request_id>/', views.reject_request, name='reject_request'),
-    path('friends/', views.friends_list, name='friends_list'),
-
+    path("search/", views.search_users, name="search"),
+    path("send/<int:user_id>/", views.send_request, name="send_request"),
+    path("requests/", views.friend_requests, name="friend_requests"),
+    path("accept/<int:request_id>/", views.accept_request, name="accept_request"),
+    path("reject/<int:request_id>/", views.reject_request, name="reject_request"),
+    path("friends/", views.friends_list, name="friends_list"),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
 ]

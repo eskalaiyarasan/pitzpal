@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
     <head>
@@ -12,10 +13,15 @@
         />
     </head>
     <body>
+        {% load static %}
         <!-- Navigation Bar -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">Pitzpal</a>
+
+                <a class="navbar-brand d-flex align-items-center" href="#">
+                            <img src="{% static 'images/logo.png' %}" alt="Pitzpal Logo" height="30" class="me-2">
+                            <span>Pitzpal</span>
+                </a>
                 <button
                     class="navbar-toggler"
                     type="button"
@@ -27,11 +33,23 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link active" href="/home">Home</a>
+                            <a class="nav-link active" href="/home">{{ user.username }}</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/about">About</a>
                         </li>
+                        <li class="nav-item">
+                            {% if user.is_authenticated %}
+                                <!-- We use a form instead of a link to provide the required POST method -->
+                                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="nav-link" ">
+                                        Logout
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </li>
+
                     </ul>
                 </div>
             </div>

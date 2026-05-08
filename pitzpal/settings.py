@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -122,3 +123,11 @@ USE_TZ = True
 STATIC_URL = "static/"
 AUTH_USER_MODEL = "crm.User"
 LOGIN_REDIRECT_URL = "/home"
+LOGOUT_REDIRECT_URL = "/login"
+# This tells Django to check the root /static/ folder
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+# This is where files are moved for production (collectstatic)
+STATIC_ROOT = BASE_DIR / "staticfiles"
