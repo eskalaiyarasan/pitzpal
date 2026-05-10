@@ -35,26 +35,10 @@ def prepare_schemas(root_json, root_param):
     return root, store
 
 
-def deep_merge(A: dict, B: dict) -> dict:
-    """
-    Deep-merge dicts A and B into a new dict.
-    [    - Recursively merges nested dicts.
-    - When keys conflict, A's value takes precedence over B's.
-    - Does not mutate A or B.
-    """
-
-    def _merge(a, b):
-        # Start from a deep copy of b so we don't mutate inputs
-        result = copy.deepcopy(b)
-        for k, a_val in a.items():
-            if k in result:
-                b_val = result[k]
-                if isinstance(a_val, Mapping) and isinstance(b_val, Mapping):
-                    result[k] = _merge(a_val, b_val)  # merge nested dicts
-                else:
-                    result[k] = copy.deepcopy(a_val)  # A overrides B
-            else:
-                result[k] = copy.deepcopy(a_val)  # add new key from A
-        return result
-
-    return _merge(A, B)
+def deep_merge(dict1, dict2):
+    for key, value in dict2.items():
+        if key in dict1 and isinstance(dict1[key], dict) and isinstance(value, dict):
+            deep_merge(dict1[key], value)
+        else:
+            dict1[key] = value
+    return dict1

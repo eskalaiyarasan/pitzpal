@@ -63,51 +63,27 @@ class CoreGameConfig:
 
 
 def _create(algo, diffx, ret, json_file, name):
-    if algo.strip() == name:
+    # print(f"{algo}, {diffx}, ret, {json_file}, {name}")
+    if name in algo.strip().split("_"):
         with open(json_file) as sf:
             content = json.load(sf)
         if diffx in content:
             data = content[diffx]
         else:
-            return False
-        ret = utils.deep_merge(ret, data)
-        return True
-    return False
+            return [False, ret]
+        ret1 = utils.deep_merge(ret, data)
+        # print(f"_create {ret}, json_file, {name}")
+        return [True, ret1]
+    return [False, ret]
 
 
 def createConfig(name: dict, level: dict):
     ret = {}
+    print(f"{name}, {level}")
     if "Value" in name and "Value" in level:
         algo = name["Value"]
         diffx = level["Value"]
-        _create(algo, diffx, ret, "pitzpalgame/json/classic.json", "classic")
-        _create(algo, diffx, ret, "pitzpalgame/json/one.json", "one")
-        _create(algo, diffx, ret, "pitzpalgame/json/pod.json", "pod")
+        result, ret = _create(algo, diffx, ret, "rules/json/classic.json", "classic")
+        result, ret = _create(algo, diffx, ret, "rules/json/one.json", "one")
+        result, ret = _create(algo, diffx, ret, "rules/json/pod.json", "pod")
     return ret
-
-
-"""
-# --- Execution ---
-
-input_json = {
-    "PitsPerSide": 6,
-    "Nside": 2,
-    "Nseeds": 4,
-    "Algorithm": {
-        "Type": "enum",
-        "SubType": ["classic", "snake", "spiral", "dark"],
-        "Value": "snake"
-    },
-    "Early": {"Enable": True, "Value": 10},
-    "Kingzpits": {"Enable": True, "Value": [2, 5]},
-    "Plus": {"Enable": False},
-    "Relay": {"Enable": False}
-}
-
-# Create config and update storage
-config = CoreGameConfig.from_json(input_json)
-
-# Verify the object state
-print(f"Final PitsPerSide: {config.PitsPerSide}")
-print(f"Final Kingzpits Enabled: {config.Kingzpits['Enable']}")
-"""

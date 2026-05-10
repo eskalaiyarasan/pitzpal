@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "pitzpalgame/rules/schema/relay.schema.json",
+  "$id": "relay.schema.json",
   "title": "Relay Schema",
 
   "$defs": {

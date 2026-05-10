@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "pitzpalgame/rules/schema/early.schema.json",
+  "$id": "early.schema.json",
   "title": "early Schema",
 
   "$defs": {

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "pitzpalgame/rules/schema/gamenew.schema.json",
+  "$id": "gamenew.schema.json",
   "title": "Game new Schema",
 
   "$defs": {
@@ -9,10 +9,10 @@
       "required": ["Name", "Level", "Players"],
       "properties": {
         "Name": {
-          "$ref": "pitzpalgame/rules/schema/name.schema.json#/$defs/Name"
+          "$ref": "name.schema.json#/$defs/Name"
         },
         "Level": {
-          "$ref": "pitzpalgame/rules/schema/level.schema.json#/$defs/Level"
+          "$ref": "level.schema.json#/$defs/Level"
         },
         "Players": {
           "type": "array",

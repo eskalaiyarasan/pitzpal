@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "pitzpalgame/rules/schema/pit.schema.json",
+  "$id": "pit.schema.json",
   "title": "Board pit Schema",
 
   "$defs": {

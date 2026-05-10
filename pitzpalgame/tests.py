@@ -11,6 +11,6 @@ xnew = {
     "Players": ["testone", "newone"],
 }
 x = ng.newgame.from_json(xnew)
-# y = x.build()
+y = x.build()
 with open("output_game.json", "w") as f:
-    f.write(str(x))
+    f.write(str(y))

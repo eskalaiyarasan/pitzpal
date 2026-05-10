@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "pitzpalgame/rules/schema/board.schema.json",
+  "$id": "board.schema.json",
   "title": "Board Schema",
 
   "$defs": {
@@ -11,7 +11,7 @@
         "Pits": {
           "type": "array",
           "items": {
-		"$ref": "pitzpalgame/rules/schema/pit.schema.json#/$defs/Pit"
+            "$ref": "pit.schema.json#/$defs/Pit"
           }
         }
       },

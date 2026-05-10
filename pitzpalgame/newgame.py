@@ -64,8 +64,8 @@ class newgame:
             ),
         }
         # check number of players == number of sides
-        if len(xnew["Players"]) != xnew["Config"]["Nside"]:
-            return None
+        # if len(xnew["Players"]) != xnew["Config"]["Nside"]:
+        # return None
 
         xnew["Board"] = board.createBoard(xnew["Config"])
         xnew["Status"] = "toss"
