@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pitzpalgame/rules/schema/kingzpits.schema.json",
+  "title": "kingzpit Schema",
+
+  "$defs": {
+    "Kingzpits": {
+      "type": "object",
+      "required": ["Enable"],
+      "properties": {
+        "Enable": {
+          "type": "boolean",
+          "default": false
+        },
+        "Value": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

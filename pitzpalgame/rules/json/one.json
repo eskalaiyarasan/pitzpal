@@ -1,0 +1,35 @@
+{
+  "easy": {
+    "Relay": {
+      "Enable": false
+    },
+    "Kingzpits": {
+      "Enable": false,
+      "Value": []
+    },
+    "Nseeds": 4,
+    "PitsPerSide": 5
+  },
+  "medium": {
+    "Relay": {
+      "Enable": false
+    },
+    "Kingzpits": {
+      "Enable": false,
+      "Value": []
+    },
+    "Nseeds": 6,
+    "PitsPerSide": 7
+  },
+  "hard": {
+    "Relay": {
+      "Enable": false
+    },
+    "Kingzpits": {
+      "Enable": false,
+      "Value": []
+    },
+    "Nseeds": 12,
+    "PitsPerSide": 11
+  }
+}

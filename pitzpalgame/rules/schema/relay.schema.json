@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pitzpalgame/rules/schema/relay.schema.json",
+  "title": "Relay Schema",
+
+  "$defs": {
+    "Relay": {
+      "type": "object",
+      "required": ["Enable"],
+      "properties": {
+        "Enable": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

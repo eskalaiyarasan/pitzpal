@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pitzpalgame/rules/schema/config.schema.json",
+  "title": "Board config Schema",
+
+  "$defs": {
+    "Config": {
+      "type": "object",
+      "required": [
+        "PitsPerSide",
+        "Nside",
+        "Nseeds",
+        "Algorithm",
+        "Early",
+        "Kingzpits",
+        "Plus",
+        "Relay"
+      ],
+      "properties": {
+        "PitsPerSide": {
+          "type": "integer"
+        },
+        "Nside": {
+          "type": "integer"
+        },
+        "Nseeds": {
+          "type": "integer"
+        },
+        "Algorithm": {
+          "$ref": "pitzpalgame/rules/schema/algorithm.schema.json#/$defs/Algorithm"
+        },
+        "Early": {
+          "$ref": "pitzpalgame/rules/schema/early.schema.json#/$defs/Early"
+        },
+        "Kingzpits": {
+          "$ref": "pitzpalgame/rules/schema/kingzpits.schema.json#/$defs/Kingzpits"
+        },
+        "Plus": {
+          "$ref": "pitzpalgame/rules/schema/plus.schema.json#/$defs/Plus"
+        },
+        "Relay": {
+          "$ref": "pitzpalgame/rules/schema/relay.schema.json#/$defs/Relay"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

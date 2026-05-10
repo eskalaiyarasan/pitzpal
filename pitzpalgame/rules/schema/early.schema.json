@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pitzpalgame/rules/schema/early.schema.json",
+  "title": "early Schema",
+
+  "$defs": {
+    "Early": {
+      "type": "object",
+      "required": ["Enable"],
+      "properties": {
+        "Enable": {
+          "type": "boolean",
+          "default": false
+        },
+        "Value": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

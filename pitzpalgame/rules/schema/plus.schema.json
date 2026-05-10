@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pitzpalgame/rules/schema/plus.schema.json",
+  "title": "Plus Schema",
+
+  "$defs": {
+    "Plus": {
+      "type": "object",
+      "required": ["Enable"],
+      "properties": {
+        "Enable": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

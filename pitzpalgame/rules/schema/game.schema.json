@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pitzpalgame/rules/schema/game.schema.json",
+  "title": "Game Schema",
+
+  "$defs": {
+    "Game": {
+      "type": "object",
+      "required": ["GameID", "Name", "Level", "Players"],
+      "properties": {
+        "GameID": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "Name": {
+          "$ref": "pitzpalgame/rules/schema/name.schema.json#/$defs/Name"
+        },
+        "Level": {
+          "$ref": "pitzpalgame/rules/schema/level.schema.json#/$defs/Level"
+        },
+        "Config": {
+          "$ref": "pitzpalgame/rules/schema/config.schema.json#/$defs/Config"
+        },
+        "Board": {
+          "$ref": "pitzpalgame/rules/schema/board.schema.json#/$defs/Board"
+        },
+        "Players": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minimum": 0
+          }
+        },
+        "Status": {
+          "type": "string",
+          "enum": ["toss", "active", "paused", "finished"]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "easy": {
+    "Plus": {
+      "Enable": false
+    },
+    "Early": {
+      "Enable": false,
+      "Value": 0
+    }
+  },
+  "medium": {
+    "Plus": {
+      "Enable": false
+    },
+    "Early": {
+      "Enable": false,
+      "Value": 0
+    }
+  },
+  "hard": {
+    "Plus": {
+      "Enable": false
+    },
+    "Early": {
+      "Enable": false,
+      "Value": 0
+    }
+  }
+}

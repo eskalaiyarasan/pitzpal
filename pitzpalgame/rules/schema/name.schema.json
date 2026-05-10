@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pitzpalgame/rules/schema/name.schema.json",
+  "title": "Game name Schema",
+
+  "$defs": {
+    "Name": {
+      "type": "object",
+      "required": ["Value"],
+      "properties": {
+        "Type": {
+          "type": "string",
+          "const": "enum"
+        },
+
+        "SubType": {
+          "type": "array",
+          "const": [
+            "classic_one_pod",
+            "classic_one_pro",
+            "classic_plus_pod",
+            "classic_plus_pro"
+          ]
+        },
+        "Value": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

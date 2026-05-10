@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pitzpalgame/rules/schema/pit.schema.json",
+  "title": "Board pit Schema",
+
+  "$defs": {
+    "Pit": {
+      "type": "object",
+      "required": ["Index", "Active", "Value"],
+      "properties": {
+        "Index": {
+          "type": "integer"
+        },
+        "Active": {
+          "type": "boolean",
+          "default": false
+        },
+        "Value": {
+          "type": "integer"
+        },
+        "Side": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
