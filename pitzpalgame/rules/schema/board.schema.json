@@ -6,14 +6,15 @@
   "$defs": {
     "Board": {
       "type": "object",
-      "required": ["Pits"],
+      "required": ["Pits", "Turn"],
       "properties": {
         "Pits": {
           "type": "array",
           "items": {
             "$ref": "pit.schema.json#/$defs/Pit"
           }
-        }
+        },
+        "Turn": { "type": "integer", "default": 0 }
       },
       "additionalProperties": false
     }

@@ -2,6 +2,7 @@ import json
 
 # from django.test import TestCase
 import newgame as ng
+import toss
 
 # Create your tests here.
 
@@ -12,5 +13,6 @@ xnew = {
 }
 x = ng.newgame.from_json(xnew)
 y = x.build()
+toss.action(y)
 with open("output_game.json", "w") as f:
-    f.write(str(y))
+    json.dump(y, f)

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "move.schema.json",
+  "title": "Move Schema",
+
+  "$defs": {
+    "Move": {
+      "type": "object",
+      "required": ["Sequence", "Timestamp", "Player", "Index"],
+      "properties": {
+        "Sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The move number (0, 1, 2...)"
+        },
+        "Timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Player": {
+          "type": "string"
+        },
+        "Index": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

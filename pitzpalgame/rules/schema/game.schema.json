@@ -31,9 +31,28 @@
             "minimum": 0
           }
         },
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
         "Status": {
           "type": "string",
           "enum": ["toss", "active", "paused", "finished"]
+        },
+        "Toss": {
+          "type": "array",
+          "items": {
+            "$ref": "toss.schema.json#/$defs/Toss"
+          }
+        },
+        "Moves": {
+          "type": "array",
+          "items": {
+            "$ref": "move.schema.json#/$defs/Move"
+          }
+        },
+        "MoveReq": {
+          "$ref": "move.schema.json#/$defs/Move"
         }
       },
       "additionalProperties": false

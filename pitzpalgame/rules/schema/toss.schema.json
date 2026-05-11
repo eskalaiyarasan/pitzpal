@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "toss.schema.json",
+  "title": "Toss Schema",
+
+  "$defs": {
+    "Toss": {
+      "type": "object",
+      "required": ["Player"],
+      "properties": {
+        "Player": {
+          "type": "string"
+        },
+        "Side": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

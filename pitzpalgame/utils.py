@@ -1,7 +1,7 @@
 import copy
 import json
 import os
-from collections.abc import Mapping
+from datetime import datetime, timezone
 
 import jsonschema
 
@@ -42,3 +42,50 @@ def deep_merge(dict1, dict2):
         else:
             dict1[key] = value
     return dict1
+
+
+def get_timestamp_str():
+    # 1. Generate current time in UTC (Recommended for Logs/Trace)
+    now_utc = datetime.now(timezone.utc)
+    # 2. To get the specific "Z" suffix (shorthand for Zulu/UTC)
+    z_timestamp = now_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+    return str(z_timestamp)
+
+
+class Base:
+    def __init__(self, schema="", myname="", initial_data=None) -> None:
+        # Use super() to avoid triggering our custom __setattr__ immediately
+        self.schema = schema
+        self.myname = myname
+        super().__setattr__("_storage", initial_data or {})
+
+    def __getattr__(self, ppty):
+        # This is only called if ppty isn't in __dict__
+        if ppty in self._storage:
+            return self._storage[ppty]
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{ppty}'"
+        )
+
+    def __setattr__(self, ppty, value):
+        # If it's already in storage, keep it there
+        if "_storage" in self.__dict__ and ppty in self._storage:
+            self._storage[ppty] = value
+        else:
+            # Otherwise, set it normally on the object
+            super().__setattr__(ppty, value)
+
+    def __str__(self):
+        return str(self._storage)
+
+    def validate_schema(self, data):
+        root, store = prepare_schemas(self.schema, self.myname)
+        resolver = jsonschema.RefResolver.from_schema(root, store=store)
+        try:
+            jsonschema.validate(instance=data, schema=root, resolver=resolver)
+            print("✓ Validation Successful")
+            return True
+        except Exception as e:
+            print(f"✗ Validation Failed: {e}")
+            raise
+        return False

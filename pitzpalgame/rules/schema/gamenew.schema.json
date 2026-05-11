@@ -14,6 +14,10 @@
         "Level": {
           "$ref": "level.schema.json#/$defs/Level"
         },
+        "Timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
         "Players": {
           "type": "array",
           "items": {
