@@ -1,0 +1,2 @@
+
+def move(game , move):

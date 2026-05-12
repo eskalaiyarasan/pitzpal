@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "algorithm.schema.json",
+  "title": "Error Schema",
+
+  "$defs": {
+    "Error": {
+      "type": "object",
+      "required": ["Value"],
+      "properties": {
+        "Type": {
+          "type": "string",
+          "const": "enum"
+        },
+
+        "SubType": {
+          "type": "array",
+          "const": [
+            { "NoError": 0 },
+            { "Timeout": 10 },
+            { "GameNotFound": 11 },
+            { "ConnectionFailed": 12 },
+            { "IllegalOptions": 17 },
+            { "IllegalAccess": 13 },
+            { "IllegalMove": 14 },
+            { "NotYourTurn": 15 },
+            { "GameEndedAgo": 16 }
+          ]
+        },
+        "Value": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

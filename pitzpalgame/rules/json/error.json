@@ -1,0 +1,15 @@
+{
+  "Type": "enum",
+  "SubType": [
+    { "NoError": 0 },
+    { "Timeout": 10 },
+    { "GameNotFound": 11 },
+    { "ConnectionFailed": 12 },
+    { "IllegalOptions": 17 },
+    { "IllegalAccess": 13 },
+    { "IllegalMove": 14 },
+    { "NotYourTurn": 15 },
+    { "GameEndedAgo": 16 }
+  ],
+  "Value": 0
+}

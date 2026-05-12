@@ -18,7 +18,8 @@
           "const": ["classic", "snake", "spiral", "dark"]
         },
         "Value": {
-          "type": "string"
+          "type": "string",
+          "enum": ["classic", "snake", "spiral", "dark"]
         }
       },
       "additionalProperties": false

@@ -16,4 +16,5 @@ def action(data):
     data["Toss"] = ret
     data["Status"] = "active"
     data["Board"]["Turn"] = 0
+    data["Moves"] = []
     return True

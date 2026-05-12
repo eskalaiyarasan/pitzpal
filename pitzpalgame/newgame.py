@@ -4,7 +4,6 @@ import uuid
 # from . import board, config, game
 import board
 import config
-import jsonschema
 import utils
 
 

@@ -6,7 +6,7 @@
   "$defs": {
     "Board": {
       "type": "object",
-      "required": ["Pits", "Turn"],
+      "required": ["Pits", "Turn", "Store"],
       "properties": {
         "Pits": {
           "type": "array",
@@ -14,7 +14,19 @@
             "$ref": "pit.schema.json#/$defs/Pit"
           }
         },
-        "Turn": { "type": "integer", "default": 0 }
+        "Turn": { "type": "integer", "default": 0 },
+        "Store": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "patternProperties": {
+              "^[0-9]+$": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
       },
       "additionalProperties": false
     }

@@ -20,6 +20,18 @@
         },
         "Side": {
           "type": "integer"
+        },
+        "Share": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "patternProperties": {
+              "^[0-9]+$": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false

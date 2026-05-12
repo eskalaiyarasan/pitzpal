@@ -50,9 +50,6 @@
           "items": {
             "$ref": "move.schema.json#/$defs/Move"
           }
-        },
-        "MoveReq": {
-          "$ref": "move.schema.json#/$defs/Move"
         }
       },
       "additionalProperties": false

@@ -34,12 +34,25 @@ def createBoard(data: dict):
     if "PitsPerSide" in data and "Nside" in data and "Nseeds" in data:
         for i in range(data["Nside"]):
             for j in range(data["PitsPerSide"]):
+                z = (i * data["PitsPerSide"]) + j
                 xnew = {
-                    "Index": (i * data["PitsPerSide"]) + j,
+                    "Index": z,
                     "Active": True,
                     "Value": data["Nseeds"],
                     "Side": i,
                 }
+                if (
+                    "Kingzpits" in data
+                    and "Enable" in data["Kingzpits"]
+                    and data["Kingzpits"]["Enable"]
+                ):
+                    value = data["Kingzpits"]["Value"]
+                    share = []
+                    if z in value:
+                        for k in range(data["Nside"]):
+                            share.append({str(k): 0})
+                    xnew["Share"] = share
+
                 pits.append(xnew)
         ret = {"Pits": pits, "Turn": 0}
     return ret
