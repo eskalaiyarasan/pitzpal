@@ -14,6 +14,7 @@
             "$ref": "pit.schema.json#/$defs/Pit"
           }
         },
+        "TotalSeeds": { "type": "integer", "minimum": 0 },
         "Turn": { "type": "integer", "default": 0 },
         "Store": {
           "type": "array",

@@ -1,4 +1,7 @@
+import copy
 import random
+
+import utils
 
 # from abc import ABC, abstractmethod
 
@@ -18,3 +21,18 @@ def action(data):
     data["Board"]["Turn"] = 0
     data["Moves"] = []
     return True
+
+
+class toss(utils.Base):
+    def __init__(self):
+        super().__init__("toss.schema.json", "Toss", {})
+
+    @classmethod
+    def from_json(cls, data: dict, validate_schema: bool = True) -> "toss":
+        """Validates and creates instance, then updates storage with input JSON."""
+        # 1. Create instance with random values initially
+        instance = cls()
+        if validate_schema:
+            instance.validate_schema(data)
+        # 2. Update _storage with a deep copy of the input JSON
+        instance._storage = copy.deepcopy(data)

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "movereq.schema.json",
+  "title": "Game Schema",
+
+  "$defs": {
+    "MoveReq": {
+      "type": "object",
+      "required": ["GameID", "Moves"],
+      "properties": {
+        "GameID": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "Move": {
+          "$ref": "move.schema.json#/$defs/Move"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

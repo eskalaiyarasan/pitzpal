@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "algorithm.schema.json",
+  "$id": "error.schema.json",
   "title": "Error Schema",
 
   "$defs": {
@@ -24,7 +24,9 @@
             { "IllegalAccess": 13 },
             { "IllegalMove": 14 },
             { "NotYourTurn": 15 },
-            { "GameEndedAgo": 16 }
+            { "GameEndedAgo": 16 },
+            { "GameMismatch": 18 },
+            { "IllegalGameType": 19 }
           ]
         },
         "Value": {

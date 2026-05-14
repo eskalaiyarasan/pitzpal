@@ -6,7 +6,7 @@
   "$defs": {
     "Game": {
       "type": "object",
-      "required": ["GameID", "Name", "Level", "Players"],
+      "required": ["GameID"],
       "properties": {
         "GameID": {
           "type": "string",

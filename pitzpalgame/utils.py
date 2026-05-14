@@ -1,7 +1,7 @@
 import copy
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import jsonschema
 
@@ -52,6 +52,24 @@ def get_timestamp_str():
     return str(z_timestamp)
 
 
+def is_time_expire(timestamp_str, expire_sec):
+    # 1. Parse the string back into a datetime object
+    # %Y-%m-%dT%H:%M:%SZ matches your specific format
+    past_time = datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%SZ")
+
+    # 2. Ensure it is UTC-aware to match the current time comparison
+    past_time = past_time.replace(tzinfo=timezone.utc)
+
+    # 3. Get the current time in UTC
+    now = datetime.now(timezone.utc)
+
+    # 4. Calculate the difference
+    difference = now - past_time
+
+    # 5. Check if difference is greater than
+    return difference > timedelta(seconds=expire_sec)
+
+
 class Base:
     def __init__(self, schema="", myname="", initial_data=None) -> None:
         # Use super() to avoid triggering our custom __setattr__ immediately
@@ -78,7 +96,12 @@ class Base:
     def __str__(self):
         return str(self._storage)
 
+    def __repr__(self):
+        return str(self._storage)
+
     def validate_schema(self, data):
+        if isinstance(data, str):
+            data = json.loads(data)
         root, store = prepare_schemas(self.schema, self.myname)
         resolver = jsonschema.RefResolver.from_schema(root, store=store)
         try:

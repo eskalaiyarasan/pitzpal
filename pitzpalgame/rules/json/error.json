@@ -8,8 +8,10 @@
     { "IllegalOptions": 17 },
     { "IllegalAccess": 13 },
     { "IllegalMove": 14 },
-    { "NotYourTurn": 15 },
-    { "GameEndedAgo": 16 }
+    { "IllegalTurn": 15 },
+    { "GameEndedAgo": 16 },
+    { "GameMismatch": 18 },
+    { "IllegalGameType": 19 }
   ],
   "Value": 0
 }
