@@ -1,6 +1,7 @@
 import ast
 import copy
 import json
+from abc import abstractmethod
 
 import algo.internal as internal
 import error
@@ -45,7 +46,7 @@ class base:
         self.error = error.error()
         # print(str(self.req))
 
-    def step(self):
+    def step_base(self):
         steps = []
         if self.state == internal.State.MOVE_VALIDATION:
             steps = self.prechecks
@@ -57,17 +58,20 @@ class base:
             steps = self.capture
         elif self.state == internal.State.MOVE_END:
             steps = self.end
-        pause = input("pause:")
-        print(pause, self.state)
+        pause = input(f"pause/{self.state}:")
         for cond in steps:
+            if pause.strip() == "1":
+                pause = input("pause:")
+                print(pause, cond)
             if callable(cond):
                 if not cond():
                     break
 
     def result(self):
-        self.step()
-        data_dict = ast.literal_eval(str(self.game))
-        return json.dumps(data_dict)
+        self.step_base()
+        pause = input("pause:")
+        print(pause, self.game)
+        return str(self.game)
 
     def is_game_active(self):
         if self.game.Status != "active":
@@ -247,13 +251,16 @@ class base:
             if (self.game.Config.Kingzpits["Enable"]) and (
                 index in self.game.Config.Kingzpits["Value"]
             ):
-                self.game.Board.Pits[index].Share[str(side)] += 1
+                value = self.game.Board.Pits[index].Share[side][str(side)]
+                self.game.Board.Pits[index].Share[side] = {str(side): value + 1}
                 pondi = True
             else:
-                value = self.game.Board.Store[str(side)]
-                self.game.Board.Store[str(side)] = (
-                    value + self.game.Board.Pits[index].Value
-                )
+                pause = input("pause:")
+                print(pause, "base.capture_action:", index)
+                value = self.game.Board.Store[side][str(side)]
+                self.game.Board.Store[side] = {
+                    str(side): value + self.game.Board.Pits[index].Value
+                }
                 self.game.Board.Pits[index].Value = 0
             if self.game.Config.Relay["Enable"] and ((value > 0) or pondi):
                 self.state = internal.State.MOVE_PROGRESS
@@ -269,8 +276,10 @@ class base:
         return True
 
     def update_moves2games(self):
-        mv = str(self.req.Move)
-        data_dict = ast.literal_eval(mv)
-        mvx = json.dumps(data_dict)
+        mvx = str(self.req.Move)
         self.game.Moves.append(mvx)
         return True
+
+    @abstractmethod
+    def step(self):
+        pass
