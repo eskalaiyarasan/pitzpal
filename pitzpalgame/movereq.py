@@ -16,3 +16,4 @@ class movereq(utils.Base):
             instance.validate_schema(data)
         # 2. Update _storage with a deep copy of the input JSON
         instance._storage = copy.deepcopy(data)
+        return instance

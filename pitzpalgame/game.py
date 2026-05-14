@@ -36,6 +36,6 @@ class game(utils.Base):
         return instance
 
     def move(self, data: movereq.movereq):
-        if self.GameID != data.GameID:
-            error.error().raiseExp("GameMismatch")
+        # if self.GameID != data.GameID:
+        #     error.error().raiseExp("GameMismatch")
         return algo.move(self, data)

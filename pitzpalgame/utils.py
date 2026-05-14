@@ -1,6 +1,7 @@
 import copy
 import json
 import os
+from abc import abstractmethod
 from datetime import datetime, timedelta, timezone
 
 import jsonschema
@@ -106,9 +107,29 @@ class Base:
         resolver = jsonschema.RefResolver.from_schema(root, store=store)
         try:
             jsonschema.validate(instance=data, schema=root, resolver=resolver)
-            print("✓ Validation Successful")
+            # print("✓ Validation Successful")
             return True
         except Exception as e:
             print(f"✗ Validation Failed: {e}")
             raise
         return False
+
+    def __deepcopy__(self, memo):
+        # 1. Create a new instance of the same class (e.g., movereq)
+        # We bypass the standard __init__ if we don't want to re-run validation
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
+
+        # 2. Copy the simple attributes normally
+        result.schema = self.schema
+        result.myname = self.myname
+
+        # 3. Deep copy the _storage dictionary specifically
+        result._storage = copy.deepcopy(self._storage, memo)
+
+        return result
+
+    # @abstractmethod
+    # def to_json(self):
+    #     pass

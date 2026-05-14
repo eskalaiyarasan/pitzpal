@@ -14,7 +14,7 @@ def action(data):
     ret = []
     side = 0
     for player in shuffled:
-        ret.append({player: side})
+        ret.append({"Player": player, "Side": side})
         side += 1
     data["Toss"] = ret
     data["Status"] = "active"

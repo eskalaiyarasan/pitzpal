@@ -6,7 +6,7 @@ import algo.base as base
 class classic(base.base):
     def __init__(self, game_in, req):
         super().__init__(game_in, req)
-        self.game = copy.deepcopy(game_in)
+        self.game = game_in
         self.req = req
         self.active = True
         self.start.append(self.classicstep)

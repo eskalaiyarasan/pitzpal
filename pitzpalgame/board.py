@@ -10,12 +10,11 @@ class Board(utils.Base):
         # Pass the specific starting data to the base constructor
         super().__init__("board.schema.json", "Board", {"Pits": [], "Turn": 0})
 
+
     @classmethod
     def from_json(cls, data: dict, validate_schema: bool = True) -> "board":
         """Validates and creates instance, then updates storage with input JSON."""
         # 1. Create instance with random values initially
-        if isinstance(data, str):
-            data = json.loads(data)
         instance = cls()
         if validate_schema:
             instance.validate_schema(data)

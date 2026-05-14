@@ -27,7 +27,7 @@ req = {
     "Move": {
         "Sequence": 1,
         "Timestamp": utils.get_timestamp_str(),
-        "Player": list(y["Toss"][0].keys())[0],
+        "Player": y["Toss"][0]["Player"],
         "Index": int(inp),
     },
 }

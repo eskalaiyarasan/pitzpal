@@ -35,9 +35,15 @@ class base:
         self.capture = [
             self.capture_plus_condition,
             self.progress_check_early,
+            self.capture_action,
         ]
-        self.end = [self.progress_check_early, self.update_moves2games]
+        self.end = [
+            self.progress_check_early,
+            self.update_next_turn,
+            self.update_moves2games,
+        ]
         self.error = error.error()
+        # print(str(self.req))
 
     def step(self):
         steps = []
@@ -51,7 +57,8 @@ class base:
             steps = self.capture
         elif self.state == internal.State.MOVE_END:
             steps = self.end
-
+        pause = input("pause:")
+        print(pause, self.state)
         for cond in steps:
             if callable(cond):
                 if not cond():
@@ -63,8 +70,14 @@ class base:
         return json.dumps(data_dict)
 
     def is_game_active(self):
-        if self.game.Staus != "active":
+        if self.game.Status != "active":
             self.error.raiseExp("GameEndedAgo")
+        if (
+            (self.game.Config.Nside <= 0)
+            or (self.game.Config.Nseeds <= 0)
+            or (self.game.Config.PitsPerSide <= 0)
+        ):
+            self.error.raiseExp("IllegalConfig")
         return True
 
     def is_valid_turn(self):
@@ -72,9 +85,9 @@ class base:
         found = False
         side = -1
         for pl in self.game.Toss:
-            if player in pl:
+            if player in pl["Player"]:
                 found = True
-                side = pl[player]
+                side = pl["Side"]
                 break
         if found:
             if side >= self.game.Config.Nside or side < 0:
@@ -91,8 +104,8 @@ class base:
     def is_valid_req(self):
         if utils.is_time_expire(self.req.Move["Timestamp"], 300):
             self.error.raiseExp("Timeout")
-        if len(self.game.moves) > 1:
-            if self.req.Move["Sequence"] != self.game.moves[-1]["Sequence"] + 1:
+        if len(self.game.Moves) > 1:
+            if self.req.Move["Sequence"] != self.game.Moves[-1]["Sequence"] + 1:
                 self.error.raiseExp("IllegalMove")
         max_index = self.game.Config.PitsPerSide * self.game.Config.Nside
         if self.req.Move["Index"] >= max_index or self.req.Move["Index"] < 0:
@@ -142,8 +155,12 @@ class base:
         return True
 
     def progress_check_captureplus(self):
+        if not (self.game.Config.Plus["Enable"] and self.game.Config.Early["Enable"]):
+            return True
         if self.kai.Value == self.step_value:
-            if self.kai.Index in self.game.Config.Kingzpits["Value"]:
+            if self.game.Config.Kingzpits["Enable"] and (
+                self.kai.Index in self.game.Config.Kingzpits["Value"]
+            ):
                 self.captureplus["Active"] = False
                 return True
             else:
@@ -166,7 +183,9 @@ class base:
         if self.game.Config.Early["Enable"]:
             if self.prev == -1:
                 pass
-            elif self.prev in self.game.Config.Kingzpits["Value"]:
+            elif self.game.Config.Kingzpits["Enable"] and (
+                self.prev in self.game.Config.Kingzpits["Value"]
+            ):
                 self.prev = -1
                 return True
             elif (
@@ -202,7 +221,12 @@ class base:
     def capture_plus_condition(self):
         if self.captureplus["Active"]:
             index = self.captureplus["Index"]
-            if self.game.Board.Pits[index].Value % self.game.Config.Early["Value"] == 0:
+            if (
+                self.game.Config.Early["Enable"]
+                and self.game.Config.Early["Value"] != 0
+            ) and (
+                self.game.Board.Pits[index].Value % self.game.Config.Early["Value"] == 0
+            ):
                 side = self.game.Board.Turn
                 value = self.game.Board.Store[str(side)]
                 self.game.Board.Store[str(side)] = (
@@ -216,22 +240,32 @@ class base:
 
     def capture_action(self):
         if self.state == internal.State.MOVE_CAPTURE:
-            index = self.kai.index
+            index = self.kai.Index
             side = self.game.Board.Turn
-            value = self.step_value
-            if index in self.game.Config.Kingzpits["Value"]:
+            value = 0
+            pondi = False
+            if (self.game.Config.Kingzpits["Enable"]) and (
+                index in self.game.Config.Kingzpits["Value"]
+            ):
                 self.game.Board.Pits[index].Share[str(side)] += 1
+                pondi = True
             else:
                 value = self.game.Board.Store[str(side)]
                 self.game.Board.Store[str(side)] = (
                     value + self.game.Board.Pits[index].Value
                 )
                 self.game.Board.Pits[index].Value = 0
-            if self.game.Config.Relay["Enable"] and value > 0:
+            if self.game.Config.Relay["Enable"] and ((value > 0) or pondi):
                 self.state = internal.State.MOVE_PROGRESS
             else:
                 self.state = internal.State.MOVE_END
                 return False
+        return True
+
+    def update_next_turn(self):
+        self.game.Board.Turn += 1
+        if self.game.Board.Turn >= self.game.Config.Nside:
+            self.game.Board.Turn = 0
         return True
 
     def update_moves2games(self):

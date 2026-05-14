@@ -6,7 +6,7 @@
   "$defs": {
     "MoveReq": {
       "type": "object",
-      "required": ["GameID", "Moves"],
+      "required": ["GameID", "Move"],
       "properties": {
         "GameID": {
           "type": "string",

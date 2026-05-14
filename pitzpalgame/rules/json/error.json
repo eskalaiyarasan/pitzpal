@@ -11,7 +11,8 @@
     { "IllegalTurn": 15 },
     { "GameEndedAgo": 16 },
     { "GameMismatch": 18 },
-    { "IllegalGameType": 19 }
+    { "IllegalGameType": 19 },
+    { "IllegalConfig": 20 }
   ],
   "Value": 0
 }
