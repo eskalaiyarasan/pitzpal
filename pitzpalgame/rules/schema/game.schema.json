@@ -37,7 +37,7 @@
         },
         "Status": {
           "type": "string",
-          "enum": ["toss", "active", "paused", "finished"]
+          "enum": ["toss", "active", "paused", "done"]
         },
         "Toss": {
           "type": "array",

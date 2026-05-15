@@ -18,26 +18,39 @@ xnew = {
 x = ng.newgame.from_json(xnew)
 y = x.build()
 toss.action(y)
-with open("output_game.json", "w") as f:
+filename = "output/new_game.json"
+with open(filename, "w") as f:
     json.dump(y, f)
+inp = 0
+sequence = 0
+try:
+    while y["Status"] != "done":
+        turn = y["Board"]["Turn"]
+        sequence += 1
+        for pit in y["Board"]["Pits"]:
+            if pit["Active"] and (pit["side"] == turn) and (pit["Value"] > 0):
+                inp = pit["Index"]
+                break
 
-inp = input("choose>pit#")
-req = {
-    "GameID": y["GameID"],
-    "Move": {
-        "Sequence": 1,
-        "Timestamp": utils.get_timestamp_str(),
-        "Player": y["Toss"][0]["Player"],
-        "Index": int(inp),
-    },
-}
-content = ""
-with open("output_game.json", "r") as file:
-    content = file.read()
+        req = {
+            "GameID": y["GameID"],
+            "Move": {
+                "Sequence": sequence,
+                "Timestamp": utils.get_timestamp_str(),
+                "Player": y["Toss"][turn]["Player"],
+                "Index": int(inp),
+            },
+        }
+        content = ""
+        with open(filename, "r") as file:
+            content = file.read()
 
-game_data = json.loads(content)
-# data_dict = ast.literal_eval(str(req))
-# reqdata = json.dumps(data_dict)
-outdata = move.move(game_data, req)
-with open("output_game.json", "w") as f:
-    f.write(outdata)
+        game_data = json.loads(content)
+        outdata = move.move(game_data, req)
+        y = ast.literal_eval(outdata)
+        # reqdata = json.dumps(data_dict)
+        filename = "output/move_" + str(sequence) + ".json"
+        with open(filename, "w") as f:
+            json.dump(y, f)
+except Exception as e:
+    print(f"exception {e}")

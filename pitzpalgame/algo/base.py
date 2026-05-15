@@ -58,19 +58,21 @@ class base:
             steps = self.capture
         elif self.state == internal.State.MOVE_END:
             steps = self.end
-        pause = input(f"pause/{self.state}:")
+        # pause = input(f"pause/{self.state}:")
         for cond in steps:
-            if pause.strip() == "1":
-                pause = input("pause:")
-                print(pause, cond)
+            # if pause.strip() == "1":
+            #     pause = input("pause:")
+            #     print(pause, cond)
             if callable(cond):
                 if not cond():
                     break
 
     def result(self):
         self.step_base()
-        pause = input("pause:")
-        print(pause, self.game)
+        self.check_roundsup()
+        self.check_gameend()
+        # pause = input("pause:")
+        print("pause", self.game)
         return str(self.game)
 
     def is_game_active(self):
@@ -197,10 +199,10 @@ class base:
                 == 0
             ):
                 side = self.game.Board.Pits[self.prev].Side
-                value = self.game.Board.Store[str(side)]
-                self.game.Board.Store[str(side)] = (
-                    value + self.game.Board.Pits[self.prev].Value
-                )
+                value = self.game.Board.Store[side][str(side)]
+                self.game.Board.Store[side] = {
+                    str(side): value + self.game.Board.Pits[self.prev].Value
+                }
                 self.game.Board.Pits[self.prev].Value = 0
             if self.state == internal.State.MOVE_PROGRESS:
                 self.prev = self.kai.Index
@@ -232,15 +234,19 @@ class base:
                 self.game.Board.Pits[index].Value % self.game.Config.Early["Value"] == 0
             ):
                 side = self.game.Board.Turn
-                value = self.game.Board.Store[str(side)]
-                self.game.Board.Store[str(side)] = (
-                    value + self.game.Board.Pits[index].Value
-                )
+                value = self.game.Board.Store[side][str(side)]
+                self.game.Board.Store[side] = {
+                    str(side): value + self.game.Board.Pits[index].Value
+                }
                 self.game.Board.Pits[index].Value = 0
                 self.captureplus["Active"] = False
                 if self.prev == index:
                     self.prev = -1
         return True
+
+    def save_to_store(self, side, seeds):
+        value = self.game.Board.Store[side][str(side)]
+        self.game.Board.Store[side] = {str(side): value + seeds}
 
     def capture_action(self):
         if self.state == internal.State.MOVE_CAPTURE:
@@ -255,12 +261,9 @@ class base:
                 self.game.Board.Pits[index].Share[side] = {str(side): value + 1}
                 pondi = True
             else:
-                pause = input("pause:")
-                print(pause, "base.capture_action:", index)
-                value = self.game.Board.Store[side][str(side)]
-                self.game.Board.Store[side] = {
-                    str(side): value + self.game.Board.Pits[index].Value
-                }
+                # pause = input("pause:")
+                print("pause", "base.capture_action:", index)
+                self.save_to_store(side, self.game.Board.Pits[index].Value)
                 self.game.Board.Pits[index].Value = 0
             if self.game.Config.Relay["Enable"] and ((value > 0) or pondi):
                 self.state = internal.State.MOVE_PROGRESS
@@ -276,8 +279,87 @@ class base:
         return True
 
     def update_moves2games(self):
-        mvx = str(self.req.Move)
+        mvx = self.req.Move
         self.game.Moves.append(mvx)
+        return True
+
+    def do_roundsup(self):
+        self.checkout_shares2store()
+        self.checkout_allpits()
+        self.checkin_allpits()
+        return True
+
+    def checkin_allpits(self):
+        seeds = self.game.Config.Nseeds
+        for pit in self.game.Config.Pits:
+            if self.game.Config.Kingzpits["Enable"] and (
+                pit.Index in self.game.Config.Kingzpits["Value"]
+            ):
+                pass
+            else:
+                value = self.game.Board.Store[pit.Side][str(pit.Side)]
+                if value >= seeds:
+                    pit.Active = True
+                    pit.Value = seeds
+                    self.game.Board.Store[pit.Side][str(pit.Side)] = value - seeds
+                else:
+                    pit.Active = False
+                    pit.Value = seeds
+        return True
+
+    def checkout_allpits(self):
+        for pit in self.game.Config.Pits:
+            if self.game.Config.Kingzpits["Enable"] and (
+                pit.Index in self.game.Config.Kingzpits["Value"]
+            ):
+                pass
+            elif pit.Active:
+                self.save_to_store(pit.Side, pit.Value)
+                pit.Value = 0
+        return True
+
+    def checkout_shares2store(self):
+        if self.game.Config.Kingzpits["Enable"]:
+            for index in self.game.Config.Kingzpits["Value"]:
+                total_share = 0
+                for share in self.game.Board.Pits[index].Share:
+                    for side in share:
+                        total_share += share[side]
+                if total_share == 0:
+                    continue
+                total_value = self.game.Board.Pits[index].Value
+                rem_seeds = total_value
+                for share in self.game.Board.Pits[index].Share:
+                    for side in share:
+                        seeds = (total_value * share[side]) // total_share
+                        self.save_to_store(side, seeds)
+                        rem_seeds -= seeds
+                        break
+                self.game.Board.Pits[index].Value == rem_seeds if rem_seeds > 0 else 0
+        return True
+
+    def check_roundsup(self, endd=False):
+        side = self.game.Board.Turn
+        # npits = self.game.Config.PitsPerSide
+        nactive = 0
+        for pit in self.game.Config.Pits:
+            if self.game.Config.Kingzpits["Enable"] and (
+                pit.Index in self.game.Config.Kingzpits["Value"]
+            ):
+                pass
+            elif pit.Active and (side == pit.Side) and (pit.Value > 0):
+                nactive += 1
+
+        if endd:
+            return nactive == 0
+        elif nactive == 0:
+            return self.do_roundsup()
+
+        return False
+
+    def check_gameend(self):
+        if self.check_roundsup(True):
+            self.game.Status = "done"
         return True
 
     @abstractmethod

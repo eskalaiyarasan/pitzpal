@@ -16,11 +16,15 @@ class classic(base.base):
 
     def classicstep(self):
         if self.kai:
-            self.kai.Index += 1
-            if self.kai.Index >= (
-                self.game.Config.Nside * self.game.Config.PitsPerSide
-            ):
-                self.kai.Index = 0
+            cond = True
+            while cond:
+                self.kai.Index += 1
+                if self.kai.Index >= (
+                    self.game.Config.Nside * self.game.Config.PitsPerSide
+                ):
+                    self.kai.Index = 0
+                cond = not self.game.Board.Pits[self.kai.Index].Active
+
             return True
         return False
 

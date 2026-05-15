@@ -9,3 +9,5 @@ class State(Enum):
     MOVE_CAPTURE = 4
     MOVE_END = 5
     MOVE_ERROR = 6
+    MOVE_ROUNDUP = 7
+    MOVE_GAMEOVER = 8
