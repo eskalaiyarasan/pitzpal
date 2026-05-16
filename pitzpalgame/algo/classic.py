@@ -1,7 +1,7 @@
 import copy
 
-import algo.base as base
-import algo.internal as internal
+from .algo import base as base
+from .algo import internal as internal
 
 
 class classic(base.base):

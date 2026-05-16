@@ -2,9 +2,7 @@ import copy
 import uuid
 
 # from . import board, config, game
-import board
-import config
-import utils
+from . import board, config, utils
 
 
 class newgame(utils.Base):

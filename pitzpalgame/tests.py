@@ -1,5 +1,6 @@
 import ast
 import json
+import random
 
 import move
 
@@ -8,7 +9,17 @@ import newgame as ng
 import toss
 import utils
 
+
 # Create your tests here.
+def print_board(y1):
+    print("=======================================")
+    print("    store:", y1["Store"])
+    print("= = = = = = = = = = = = = = = = = = = =")
+    for pit in y1["Pits"]:
+        active = "✓" if pit["Active"] else "✗"
+        print("\t", active, pit["Index"], pit["Value"])
+    print("=======================================")
+
 
 xnew = {
     "Name": {"Value": "classic_one_pod"},
@@ -27,10 +38,18 @@ try:
     while y["Status"] != "done":
         turn = y["Board"]["Turn"]
         sequence += 1
-        for pit in y["Board"]["Pits"]:
-            if pit["Active"] and (pit["side"] == turn) and (pit["Value"] > 0):
-                inp = pit["Index"]
-                break
+        pits = [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]
+        print_board(y["Board"])
+        if turn == 1:
+            inp = input("input:")
+        else:
+            choice = True
+            while choice:
+                inp = random.choice(pits[turn])
+                if (y["Board"]["Pits"][inp]["Active"]) and (
+                    y["Board"]["Pits"][inp]["Value"] > 0
+                ):
+                    choice = False
 
         req = {
             "GameID": y["GameID"],

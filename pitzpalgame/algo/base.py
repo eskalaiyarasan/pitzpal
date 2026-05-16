@@ -3,10 +3,11 @@ import copy
 import json
 from abc import abstractmethod
 
-import algo.internal as internal
 import error
 import game
 import utils
+
+from .algo import internal as internal
 
 
 class base:
@@ -72,7 +73,7 @@ class base:
         self.check_roundsup()
         self.check_gameend()
         # pause = input("pause:")
-        print("pause", self.game)
+        # print("pause", self.game)
         return str(self.game)
 
     def is_game_active(self):
@@ -108,7 +109,7 @@ class base:
         return False
 
     def is_valid_req(self):
-        if utils.is_time_expire(self.req.Move["Timestamp"], 300):
+        if utils.is_time_expire(self.req.Move["Timestamp"], 900):
             self.error.raiseExp("Timeout")
         if len(self.game.Moves) > 1:
             if self.req.Move["Sequence"] != self.game.Moves[-1]["Sequence"] + 1:
@@ -262,7 +263,7 @@ class base:
                 pondi = True
             else:
                 # pause = input("pause:")
-                print("pause", "base.capture_action:", index)
+                # print("pause", "base.capture_action:", index)
                 self.save_to_store(side, self.game.Board.Pits[index].Value)
                 self.game.Board.Pits[index].Value = 0
             if self.game.Config.Relay["Enable"] and ((value > 0) or pondi):
@@ -291,29 +292,32 @@ class base:
 
     def checkin_allpits(self):
         seeds = self.game.Config.Nseeds
-        for pit in self.game.Config.Pits:
+        for pit in self.game.Board.Pits:
             if self.game.Config.Kingzpits["Enable"] and (
                 pit.Index in self.game.Config.Kingzpits["Value"]
             ):
                 pass
             else:
                 value = self.game.Board.Store[pit.Side][str(pit.Side)]
+                # print("checkin_allpits: value", pit.Index, pit.Side)
                 if value >= seeds:
                     pit.Active = True
                     pit.Value = seeds
-                    self.game.Board.Store[pit.Side][str(pit.Side)] = value - seeds
+                    value -= seeds
+                    self.game.Board.Store[pit.Side][str(pit.Side)] = value
                 else:
                     pit.Active = False
-                    pit.Value = seeds
+                    pit.Value = 0
         return True
 
     def checkout_allpits(self):
-        for pit in self.game.Config.Pits:
+        for pit in self.game.Board.Pits:
             if self.game.Config.Kingzpits["Enable"] and (
                 pit.Index in self.game.Config.Kingzpits["Value"]
             ):
                 pass
             elif pit.Active:
+                print("checkout_allpits: save_to_store", pit.Index, pit.Side, pit.Value)
                 self.save_to_store(pit.Side, pit.Value)
                 pit.Value = 0
         return True
@@ -332,9 +336,11 @@ class base:
                 for share in self.game.Board.Pits[index].Share:
                     for side in share:
                         seeds = (total_value * share[side]) // total_share
+                        # print("share2store: save_to_store", index, side, seeds)
                         self.save_to_store(side, seeds)
                         rem_seeds -= seeds
                         break
+
                 self.game.Board.Pits[index].Value == rem_seeds if rem_seeds > 0 else 0
         return True
 
@@ -342,7 +348,7 @@ class base:
         side = self.game.Board.Turn
         # npits = self.game.Config.PitsPerSide
         nactive = 0
-        for pit in self.game.Config.Pits:
+        for pit in self.game.Board.Pits:
             if self.game.Config.Kingzpits["Enable"] and (
                 pit.Index in self.game.Config.Kingzpits["Value"]
             ):

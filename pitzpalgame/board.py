@@ -1,15 +1,13 @@
 # from . import pit, utils
 import copy
 
-import pit
-import utils
+from . import pit, utils
 
 
 class Board(utils.Base):
     def __init__(self) -> None:
         # Pass the specific starting data to the base constructor
         super().__init__("board.schema.json", "Board", {"Pits": [], "Turn": 0})
-
 
     @classmethod
     def from_json(cls, data: dict, validate_schema: bool = True) -> "board":

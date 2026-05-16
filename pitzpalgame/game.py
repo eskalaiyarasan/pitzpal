@@ -1,11 +1,9 @@
 import copy
 
-import algo.algo as algo
-import board
-import config
-import error
 import movereq
-import utils
+
+from . import board, config, utils
+from .algo import algo as algo
 
 
 class game(utils.Base):

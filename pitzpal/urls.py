@@ -24,5 +24,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("crm.urls")),
     path("home/", include("home.urls")),
+    path("game/", include("pitzpalgame.urls")),
     path("about/", views.about_view),
 ]

@@ -1,7 +1,7 @@
 import copy
 import random
 
-import utils
+from . import utils
 
 # from abc import ABC, abstractmethod
 

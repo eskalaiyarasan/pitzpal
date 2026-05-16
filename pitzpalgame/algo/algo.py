@@ -1,8 +1,9 @@
-import algo.base as base
-import algo.classic as classic
-import algo.internal as internal
 import error
 import movereq
+
+from .algo import base as base
+from .algo import classic as classic
+from .algo import internal as internal
 
 
 def move(game_in, req: movereq.movereq):

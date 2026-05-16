@@ -1,6 +1,6 @@
 import copy
 
-import utils
+from . import utils
 
 
 class pit(utils.Base):

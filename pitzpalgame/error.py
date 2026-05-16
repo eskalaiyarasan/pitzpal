@@ -1,7 +1,7 @@
 import copy
 import json
 
-import utils
+from . import utils
 
 
 class errorExp(Exception):
