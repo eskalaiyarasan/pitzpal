@@ -1,7 +1,7 @@
 import copy
 import json
 
-from . import utils
+from pitzpalgame import utils
 
 
 class errorExp(Exception):

@@ -1,7 +1,7 @@
 import copy
 
-from .algo import base as base
-from .algo import internal as internal
+from . import base as base
+from . import internal as internal
 
 
 class classic(base.base):

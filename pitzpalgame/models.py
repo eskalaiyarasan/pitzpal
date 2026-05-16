@@ -1,14 +1,18 @@
 # Create your models here.
 import uuid
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 
 
 class PitzpalGame(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    player1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="games_p1")
-    player2 = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    player1 = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="games_p1"
+    )
+    player2 = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True
+    )
 
     # This stores the "Game" schema JSON
     game = models.JSONField()

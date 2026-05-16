@@ -2,7 +2,7 @@ import copy
 import json
 
 # from . import utils
-import utils
+from . import utils
 
 
 class CoreGameConfig(utils.Base):

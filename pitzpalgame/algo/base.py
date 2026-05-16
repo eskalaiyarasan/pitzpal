@@ -3,15 +3,12 @@ import copy
 import json
 from abc import abstractmethod
 
-import error
-import game
-import utils
-
-from .algo import internal as internal
+from . import error
+from . import internal as internal
 
 
 class base:
-    def __init__(self, game_in: game.game, req):
+    def __init__(self, game_in, req):
         self.state = internal.State.MOVE_VALIDATION
         self.active = False
         self.game = game_in
@@ -109,7 +106,7 @@ class base:
         return False
 
     def is_valid_req(self):
-        if utils.is_time_expire(self.req.Move["Timestamp"], 900):
+        if internal.is_time_expire(self.req.Move["Timestamp"], 900):
             self.error.raiseExp("Timeout")
         if len(self.game.Moves) > 1:
             if self.req.Move["Sequence"] != self.game.Moves[-1]["Sequence"] + 1:

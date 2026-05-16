@@ -1,9 +1,6 @@
 import copy
 
-import movereq
-
-from . import board, config, utils
-from .algo import algo as algo
+from . import board, config, engine, movereq, utils
 
 
 class game(utils.Base):
@@ -36,4 +33,4 @@ class game(utils.Base):
     def move(self, data: movereq.movereq):
         # if self.GameID != data.GameID:
         #     error.error().raiseExp("GameMismatch")
-        return algo.move(self, data)
+        return engine.move(self, data)
