@@ -82,6 +82,7 @@ async function loadBoard(gameId) {
     if (data.Status === "toss") {
         renderTossView(gameId);
     } else {
+        const currentTurn = data.Board.Turn;
         const myData = data.Toss.find(p => p.Player === currentUsername);
         const mySide = myData ? myData.Side : null;
         const aiBtn = document.getElementById('ai-move-btn');
@@ -100,7 +101,7 @@ async function loadBoard(gameId) {
 }
 
 function renderPlayerNames(data) {
-    const area = document.getElementById('toss-result-area');
+    const area = document.getElementById('toss-result');
     if (!data.Toss || data.Toss.length === 0) return;
 
     // Sort players by Side (0 first, then 1)
@@ -122,7 +123,11 @@ function renderPlayerNames(data) {
         `;
     }).join('');
 }
-
+function updateTurnDisplay(turn) {
+    // Simply re-loading the board is the safest way to sync all UI elements
+    const gameId = document.getElementById('display-game-id').innerText;
+    loadBoard(gameId);
+}
 function renderTossView(gameId) {
     const container = document.getElementById('board-container');
 
