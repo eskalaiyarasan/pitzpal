@@ -75,12 +75,109 @@ function toggleSetup() {
     setupDiv.style.display = (setupDiv.style.display === 'none') ? 'block' : 'none';
 }
 
+function renderGameOver(data) {
+    const container = document.getElementById('board-container');
+    const tossResultArea = document.getElementById('toss-result');
+    const aiBtn = document.getElementById('ai-move-btn');
+
+    // Hide active gameplay elements we no longer need
+    if (aiBtn) aiBtn.style.display = "none";
+    if (tossResultArea) tossResultArea.innerHTML = '';
+
+    // Initialize map variables to parse scores
+    let scores = {};
+    if (data.Store && data.Store.length > 0) {
+        data.Store.forEach(store => {
+            const [[side, value]] = Object.entries(store);
+            scores[side] = parseInt(value, 10);
+        });
+    }
+
+    // Default scores to 0 if they don't exist in the payload
+    const score0 = scores["0"] || 0;
+    const score1 = scores["1"] || 0;
+
+    // Determine the winning side
+    let winnerSide = null;
+    let titleText = "It's a Tie!";
+    let alertClass = "alert-secondary";
+
+    if (score0 > score1) {
+        winnerSide = 0;
+        alertClass = "alert-success";
+    } else if (score1 > score0) {
+        winnerSide = 1;
+        alertClass = "alert-success";
+    }
+
+    // Map the side numbers to real player names using the Toss array
+    let player0Name = "Side 0";
+    let player1Name = "Side 1";
+    if (data.Toss && data.Toss.length > 0) {
+        const p0 = data.Toss.find(p => String(p.Side) === "0");
+        const p1 = data.Toss.find(p => String(p.Side) === "1");
+        if (p0) player0Name = p0.Player;
+        if (p1) player1Name = p1.Player;
+    }
+
+    // Set final winner display string
+    if (winnerSide !== null) {
+        const winnerName = (winnerSide === 0) ? player0Name : player1Name;
+        titleText = `🎉🏆 Winner: ${winnerName}!`;
+    }
+
+    // Render a polished Game Over breakdown inside the main container
+    container.innerHTML = `
+        <div class="card shadow border-0 w-100 p-4">
+            <div class="alert ${alertClass} text-center py-4 mb-4">
+                <h2 class="display-5 fw-bold mb-0">${titleText}</h2>
+                <p class="text-muted mt-2 mb-0">The game has concluded successfully.</p>
+            </div>
+
+            <div class="row justify-content-center text-center g-4 mb-4">
+                <div class="col-sm-5">
+                    <div class="p-3 border rounded ${winnerSide === 0 ? 'border-success bg-light shadow-sm' : 'bg-light text-muted'}">
+                        <span class="badge ${winnerSide === 0 ? 'bg-success' : 'bg-secondary'} mb-2">SIDE 0</span>
+                        <h4 class="mb-1 text-truncate">${player0Name}</h4>
+                        <div class="display-6 fw-bold">${score0}</div>
+                        <small class="text-muted">Final Seeds</small>
+                    </div>
+                </div>
+                <div class="col-sm-2 d-flex align-items-center justify-content-center">
+                    <span class="fw-bold text-muted fs-4">VS</span>
+                </div>
+                <div class="col-sm-5">
+                    <div class="p-3 border rounded ${winnerSide === 1 ? 'border-success bg-light shadow-sm' : 'bg-light text-muted'}">
+                        <span class="badge ${winnerSide === 1 ? 'bg-success' : 'bg-secondary'} mb-2">SIDE 1</span>
+                        <h4 class="mb-1 text-truncate">${player1Name}</h4>
+                        <div class="display-6 fw-bold">${score1}</div>
+                        <small class="text-muted">Final Seeds</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button class="btn btn-primary btn-lg px-4" onclick="window.location.reload();">
+                    <i class="bi bi-arrow-clockwise"></i> Return to Lobby
+                </button>
+            </div>
+        </div>
+    `;
+
+    // Also explicitly update the store info block sidebar with final values
+    renderStore(data);
+}
+
 async function loadBoard(gameId) {
     try {
         const response = await fetch(`/game/${gameId}/refresh`);
         const data = await response.json();
         const currentUsername = "{{ user.username }}";
 
+	if (data.Status === "done") {
+            renderGameOver(data);
+            return; // Stop further board rendering since the game is finished
+        }
         if (data.Status === "toss") {
              renderTossView(gameId);
         } else {
