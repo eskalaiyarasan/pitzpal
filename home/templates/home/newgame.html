@@ -56,6 +56,7 @@
                     <div class="col-md-3 border-end">
                         <h6>Move History</h6>
                         <div id="history-log" style="height: 300px; overflow-y: auto; font-size: 0.9rem;"></div>
+                        <div id="store-info" class="alert alert-info py-1 mb-2"></div>
                     </div>
                     <div class="col-md-9 text-center">
                         <div id="toss-result" class="alert alert-info py-1 mb-3"></div>
@@ -80,7 +81,7 @@ async function loadBoard(gameId) {
     const currentUsername = "{{ user.username }}";
     // Check the Status field from your JSON schema
     if (data.Status === "toss") {
-        renderTossView(gameId);
+         renderTossView(gameId);
     } else {
         const currentTurn = data.Board.Turn;
         const myData = data.Toss.find(p => p.Player === currentUsername);
@@ -92,6 +93,7 @@ async function loadBoard(gameId) {
         } else {
             aiBtn.style.display = "none";
         }
+
         renderPlayerNames(data)
         renderBoard(data);
         // Hide the toss area if it was visible
@@ -167,92 +169,118 @@ async function handleToss(gameId) {
         btn.innerText = "TOSS AGAIN";
     }
 }
+async function triggerUrMove() {
+    const gameId = document.getElementById('display-game-id').innerText;
+    const btn = document.getElementById('ai-move-btn');
+
+    // Disable button to prevent double-clicks
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Computer is thinking...';
+
+    try {
+        const response = await fetch(`/game/${gameId}/urmove`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            // The computer move API usually doesn't need a body,
+            // but we send the ID just in case your view expects it.
+            body: JSON.stringify({ "GameID": gameId })
+        });
+
+        if (response.ok) {
+            const updatedData = await response.json();
+
+            // Log the AI move in history
+            const log = document.getElementById('history-log');
+            log.innerHTML += `<div class="p-2 border-bottom text-danger">Computer performed a move.</div>`;
+            log.scrollTop = log.scrollHeight;
+
+            // Refresh everything (this will also hide the AI button automatically)
+            loadBoard(gameId);
+        } else {
+            alert("Computer move failed. Check server logs.");
+        }
+    } catch (error) {
+        console.error("Error triggering computer move:", error);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "Perform Opponent Move";
+    }
+}
+function renderStore(data) {
+  const container = document.getElementById('store-info');
+  const stores = data.Store; // e.g., [{"0":5}, {"1":2}]
+
+  // Map over the array objects, pull out the key-value pair, and make a row
+  const rowsHtml = stores.map(store => {
+    // Extract the key (side) and value (score) from the object
+    const [[side, value]] = Object.entries(store);
+
+    return `
+      <tr>
+        <th scope="row">Side ${side} Store</th>
+        <td class="fw-bold text-center">${value}</td>
+      </tr>
+    `;
+  }).join('');
+
+  // Inject the completed table into the container
+  container.innerHTML = `
+    <table class="table table-bordered align-middle m-0">
+      <thead>
+        <tr class="table-light">
+          <th>Player Side</th>
+          <th class="text-center">Store Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHtml}
+      </tbody>
+    </table>
+  `;
+}
 function renderBoard(data) {
 
    const container = document.getElementById('board-container');
-
    const gameId = data.GameID;
-
    const board = data.Board;
-
    const pits = board.Pits; // Array of pit objects {Side, Index, Value}
-
-
    container.innerHTML = '';
-
-
    // 1. Group pits by their "Side" property
-
    const sidesMap = {};
-
    pits.forEach(pit => {
-
        if (!sidesMap[pit.Side]) {
-
            sidesMap[pit.Side] = [];
-
        }
-
        sidesMap[pit.Side].push(pit);
-
    });
-
-
    // 2. Sort the sides (0, 1, 2, 3...) to ensure consistent UI order
-
    const sideIds = Object.keys(sidesMap).sort((a, b) => a - b);
-
-
    // 3. Create a layout container (Vertical stack of rows)
-
    const boardLayout = document.createElement('div');
-
    boardLayout.className = "d-flex flex-column gap-4 w-100";
 
-
    sideIds.forEach(sideId => {
-
        // Create a Bootstrap Row for this specific side
-
        const row = document.createElement('div');
-
        row.className = `side-row d-flex justify-content-center gap-2 p-2 border rounded`;
-
-
        // Add a label for the side (e.g., "Player 0")
-
        row.setAttribute('data-side', sideId);
-
-
        // Optional: Mirror the top rows (odd sides) for a "facing each other" look
-
        if (sideId % 2 !== 0) {
-
            row.classList.add('flex-row-reverse');
-
            row.classList.add('bg-light'); // Slight color diff for clarity
-
        }
-
-
        // 4. Append pits belonging to this side
-
        sidesMap[sideId].forEach(pit => {
-
            const pitBtn = createPitElement(pit, gameId, board.Turn);
-
            row.appendChild(pitBtn);
-
        });
-
-
        boardLayout.appendChild(row);
-
    });
-
-
    container.appendChild(boardLayout);
-
 }
 /**
  * Helper to create a pit button

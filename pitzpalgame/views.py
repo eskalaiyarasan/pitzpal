@@ -141,6 +141,7 @@ def refresh(request, game_id):
         }
         if y["Status"] != "toss":
             ret["Toss"] = y["Toss"]
+            ret["Moves"] = y["Moves"]
         return JsonResponse(ret)
 
 
