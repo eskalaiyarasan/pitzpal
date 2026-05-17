@@ -45,6 +45,11 @@
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 <span>Game ID: <small id="display-game-id"></small></span>
                 <span id="turn-indicator" class="badge bg-light text-dark"></span>
+                <span>
+                    <button id="ai-move-btn" class="btn btn-warning mt-3" style="display:none;" onclick="triggerUrMove()">
+                        Perform Computer Move
+                    </button>
+                </span>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -52,14 +57,7 @@
                         <h6>Move History</h6>
                         <div id="history-log" style="height: 300px; overflow-y: auto; font-size: 0.9rem;"></div>
                     </div>
-                    <div class="col-md-9 text-center">
-                        <div id="toss-result" class="alert alert-info py-1 mb-3"></div>
-                        <div id="board-container" class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
-                            </div>
-                        <button id="ai-move-btn" class="btn btn-warning mt-3" style="display:none;" onclick="triggerUrMove()">
-                            Perform Computer Move
-                        </button>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -73,65 +71,145 @@ function toggleSetup() {
 }
 async function loadBoard(gameId) {
     const response = await fetch(`/game/${gameId}/refresh`);
-    const boardData = await response.json();
+    const data = await response.json();
 
-    // boardData is the JSON matching your board.schema.json
-    renderBoard(boardData);
-
-    // If you have the initUI function from before, call it for the toss result
-    if (typeof initUI === "function") initUI(boardData);
+    // Check the Status field from your JSON schema
+    if (data.Status === "toss") {
+        renderTossView(gameId);
+    } else {
+        renderBoard(data);
+        // Hide the toss area if it was visible
+        const tossArea = document.getElementById('toss-display');
+        if (tossArea) tossArea.innerHTML = '';
+    }
 }
 
-function renderBoard(data) {
+function renderTossView(gameId) {
     const container = document.getElementById('board-container');
-    const gameId = data.GameID;
-    const board = data.Board;
-    const pits = board.Pits; // Array of pit objects {Side, Index, Value}
 
-    container.innerHTML = '';
+    container.innerHTML = `
+        <div class="text-center p-5 border rounded bg-light shadow-sm">
+            <h2 class="mb-4">Ready to play?</h2>
+            <p class="text-muted">Click the button to decide who moves first!</p>
+            <button id="toss-btn" class="btn btn-warning btn-lg px-5 py-3 shadow" onclick="handleToss('${gameId}')">
+                <i class="bi bi-coin"></i> TOSS
+            </button>
+        </div>
+    `;
+}
 
-    // 1. Group pits by their "Side" property
-    const sidesMap = {};
-    pits.forEach(pit => {
-        if (!sidesMap[pit.Side]) {
-            sidesMap[pit.Side] = [];
-        }
-        sidesMap[pit.Side].push(pit);
-    });
+async function handleToss(gameId) {
+    const btn = document.getElementById('toss-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Flipping...';
 
-    // 2. Sort the sides (0, 1, 2, 3...) to ensure consistent UI order
-    const sideIds = Object.keys(sidesMap).sort((a, b) => a - b);
-
-    // 3. Create a layout container (Vertical stack of rows)
-    const boardLayout = document.createElement('div');
-    boardLayout.className = "d-flex flex-column gap-4 w-100";
-
-    sideIds.forEach(sideId => {
-        // Create a Bootstrap Row for this specific side
-        const row = document.createElement('div');
-        row.className = `side-row d-flex justify-content-center gap-2 p-2 border rounded`;
-
-        // Add a label for the side (e.g., "Player 0")
-        row.setAttribute('data-side', sideId);
-
-        // Optional: Mirror the top rows (odd sides) for a "facing each other" look
-        if (sideId % 2 !== 0) {
-            row.classList.add('flex-row-reverse');
-            row.classList.add('bg-light'); // Slight color diff for clarity
-        }
-
-        // 4. Append pits belonging to this side
-        sidesMap[sideId].forEach(pit => {
-            const pitBtn = createPitElement(pit, gameId, board.Turn);
-            row.appendChild(pitBtn);
+    try {
+        const response = await fetch(`/game/${gameId}/toss`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
         });
 
-        boardLayout.appendChild(row);
-    });
-
-    container.appendChild(boardLayout);
+        if (response.ok) {
+            // After a successful toss, refresh the board
+            // The status will now be 'playing' and the board will render
+            loadBoard(gameId);
+        }
+    } catch (error) {
+        console.error("Toss failed:", error);
+        btn.disabled = false;
+        btn.innerText = "TOSS AGAIN";
+    }
 }
+function renderBoard(data) {
 
+   const container = document.getElementById('board-container');
+
+   const gameId = data.GameID;
+
+   const board = data.Board;
+
+   const pits = board.Pits; // Array of pit objects {Side, Index, Value}
+
+
+   container.innerHTML = '';
+
+
+   // 1. Group pits by their "Side" property
+
+   const sidesMap = {};
+
+   pits.forEach(pit => {
+
+       if (!sidesMap[pit.Side]) {
+
+           sidesMap[pit.Side] = [];
+
+       }
+
+       sidesMap[pit.Side].push(pit);
+
+   });
+
+
+   // 2. Sort the sides (0, 1, 2, 3...) to ensure consistent UI order
+
+   const sideIds = Object.keys(sidesMap).sort((a, b) => a - b);
+
+
+   // 3. Create a layout container (Vertical stack of rows)
+
+   const boardLayout = document.createElement('div');
+
+   boardLayout.className = "d-flex flex-column gap-4 w-100";
+
+
+   sideIds.forEach(sideId => {
+
+       // Create a Bootstrap Row for this specific side
+
+       const row = document.createElement('div');
+
+       row.className = `side-row d-flex justify-content-center gap-2 p-2 border rounded`;
+
+
+       // Add a label for the side (e.g., "Player 0")
+
+       row.setAttribute('data-side', sideId);
+
+
+       // Optional: Mirror the top rows (odd sides) for a "facing each other" look
+
+       if (sideId % 2 !== 0) {
+
+           row.classList.add('flex-row-reverse');
+
+           row.classList.add('bg-light'); // Slight color diff for clarity
+
+       }
+
+
+       // 4. Append pits belonging to this side
+
+       sidesMap[sideId].forEach(pit => {
+
+           const pitBtn = createPitElement(pit, gameId, board.Turn);
+
+           row.appendChild(pitBtn);
+
+       });
+
+
+       boardLayout.appendChild(row);
+
+   });
+
+
+   container.appendChild(boardLayout);
+
+}
 /**
  * Helper to create a pit button
  * pit: {Index, Value, Side}
@@ -165,7 +243,7 @@ function createPitElement(pit, gameId, currentTurn) {
 }
 
 async function submitMove(gameId, pitIndex) {
-    const response = await fetch(`/${gameId}/mymove`, {
+    const response = await fetch(`/game/${gameId}/mymove`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -27,21 +27,23 @@ def start_game(request):
 
 def toss_action(request, game_id):
     if request.method == "POST":
-        data = json.loads(request.body)
         z = get_object_or_404(PitzpalGame, id=game_id)
         y = z.game
-        toss.action(y)
-        z.game = y
-        z.save()
-        return JsonResponse(
-            {
-                "GameID": data["GameID"],
-                "Board": y["Board"],
-                "Toss": y["Toss"],
-                "Status": y["Status"],
-                "Error": {"Value": 0},
-            }
-        )
+        ret = {
+            "GameID": game_id,
+            "Board": y["Board"],
+            "Status": y["Status"],
+            "Error": {"Value": 0},
+        }
+        if y["Status"] == "toss":
+            toss.action(y)
+            z.game = y
+            z.save()
+            ret["Toss"] = y["Toss"]
+        else:
+            ret["Toss"] = y["Toss"]
+            ret["Error"] = {"Value": 17}
+        return JsonResponse(ret)
 
 
 def make_comp_move(request, game_id):
@@ -133,8 +135,8 @@ def refresh(request, game_id):
             "GameID": game_id,
             "Board": y["Board"],
             "Error": {"Value": 0},
+            "Status": y["Status"],
         }
         if y["Status"] != "toss":
-            ret["Status"] = y["Status"]
             ret["Toss"] = y["Toss"]
         return JsonResponse(ret)
