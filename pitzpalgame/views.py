@@ -26,7 +26,7 @@ def start_game(request):
 
 
 def toss_action(request, game_id):
-    if request.method == "POST":
+    if request.method in ["POST", "GET"]:
         z = get_object_or_404(PitzpalGame, id=game_id)
         y = z.game
         ret = {
