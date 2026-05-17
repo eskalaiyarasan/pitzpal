@@ -77,16 +77,50 @@ function toggleSetup() {
 async function loadBoard(gameId) {
     const response = await fetch(`/game/${gameId}/refresh`);
     const data = await response.json();
-
+    const currentUsername = "{{ user.username }}";
     // Check the Status field from your JSON schema
     if (data.Status === "toss") {
         renderTossView(gameId);
     } else {
+        const myData = data.Toss.find(p => p.Player === currentUsername);
+        const mySide = myData ? myData.Side : null;
+        const aiBtn = document.getElementById('ai-move-btn');
+        if (currentTurn !== mySide) {
+            aiBtn.style.display = "block";
+            aiBtn.innerText = "Perform Opponent Move"; // Clearer labeling
+        } else {
+            aiBtn.style.display = "none";
+        }
+        renderPlayerNames(data)
         renderBoard(data);
         // Hide the toss area if it was visible
         const tossArea = document.getElementById('toss-display');
         if (tossArea) tossArea.innerHTML = '';
     }
+}
+
+function renderPlayerNames(data) {
+    const area = document.getElementById('toss-result-area');
+    if (!data.Toss || data.Toss.length === 0) return;
+
+    // Sort players by Side (0 first, then 1)
+    const sortedPlayers = [...data.Toss].sort((a, b) => a.Side - b.Side);
+    const currentTurn = data.Board.Turn;
+
+    area.innerHTML = sortedPlayers.map(p => {
+        // Highlight logic
+        const isActive = (p.Side === currentTurn);
+        const activeClass = isActive ? 'border-primary bg-primary text-white shadow' : 'bg-light text-muted';
+        const activeLabel = isActive ? '<span class="badge bg-warning text-dark ms-2">THINKING...</span>' : '';
+
+        return `
+            <div class="p-3 border rounded-3 text-center transition-all ${activeClass}" style="min-width: 150px;">
+                <div class="small fw-bold">SIDE ${p.Side}</div>
+                <div class="fs-5">${p.Player}</div>
+                ${activeLabel}
+            </div>
+        `;
+    }).join('');
 }
 
 function renderTossView(gameId) {

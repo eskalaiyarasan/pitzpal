@@ -10,4 +10,6 @@ urlpatterns = [
     path("<uuid:game_id>/toss", views.toss_action, name="api_get_toss"),
     # Creation still needs a base endpoint
     path("new/", views.start_game, name="api_new_game"),
+    path("my-games/", views.game_list, name="game_list"),
+    path("<uuid:game_id>/delete", views.delete_game, name="delete_game"),
 ]

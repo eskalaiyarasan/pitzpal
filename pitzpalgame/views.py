@@ -1,8 +1,10 @@
 import ast
 import json
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 
 from . import move, toss
 from . import newgame as ng
@@ -140,3 +142,21 @@ def refresh(request, game_id):
         if y["Status"] != "toss":
             ret["Toss"] = y["Toss"]
         return JsonResponse(ret)
+
+
+@login_required
+def game_list(request):
+    # Get all games where the user is player1 or player2
+    games = PitzpalGame.objects.filter(
+        player1=request.user
+    ) | PitzpalGame.objects.filter(player2=request.user)
+    return render(request, "home/game_list.html", {"games": games.order_by("-id")})
+
+
+@login_required
+def delete_game(request, game_id):
+    if request.method == "POST":
+        game = get_object_or_404(PitzpalGame, id=game_id, player1=request.user)
+        game.delete()
+        messages.success(request, "Game deleted successfully.")
+    return redirect("game_list")

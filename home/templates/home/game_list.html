@@ -1,0 +1,73 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Games</h2>
+        <a href="{% url 'api_new_game' %}" class="btn btn-success">New Game</a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Game ID</th>
+                        <th>Opponent</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for game in games %}
+                    <tr>
+                        <td class="align-middle small">{{ game.id }}</td>
+                        <td class="align-middle">
+                            {% if game.player2 %}{{ game.player2.username }}{% else %}Computer{% endif %}
+                        </td>
+                        <td class="align-middle">
+                            <span class="badge {% if game.game.Status == 'toss' %}bg-warning{% else %}bg-primary{% endif %}">
+                                {{ game.game.Status|upper }}
+                            </span>
+                        </td>
+                        <td class="align-middle">
+                            <div class="btn-group">
+                                <a href="/game/view/{{ game.id }}" class="btn btn-sm btn-outline-primary">Play</a>
+
+                                <button class="btn btn-sm btn-outline-danger"
+                                        onclick="confirmDelete('{{ game.id }}')">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">No games found. Start a new one!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<form id="delete-form" method="POST" style="display:none;">
+    {% csrf_token %}
+</form>
+
+<script>
+function confirmDelete(gameId) {
+    if (confirm("Are you sure you want to delete this game? This cannot be undone.")) {
+        const form = document.getElementById('delete-form');
+        form.action = `/game/${gameId}/delete/`;
+        form.submit();
+    }
+}
+</script>
+{% endblock %}
