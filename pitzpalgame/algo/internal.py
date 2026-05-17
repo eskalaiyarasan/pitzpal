@@ -17,7 +17,7 @@ class State(Enum):
 def is_time_expire(timestamp_str, expire_sec):
     # 1. Parse the string back into a datetime object
     # %Y-%m-%dT%H:%M:%SZ matches your specific format
-    past_time = datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%SZ")
+    past_time = datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%S.%fZ")
 
     # 2. Ensure it is UTC-aware to match the current time comparison
     past_time = past_time.replace(tzinfo=timezone.utc)

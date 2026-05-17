@@ -287,28 +287,50 @@ function createPitElement(pit, gameId, currentTurn) {
 }
 
 async function submitMove(gameId, pitIndex) {
+    // 1. Get the latest game state to find the last sequence number
+    const refreshResponse = await fetch(`/game/${gameId}/refresh`);
+    const currentGameData = await refreshResponse.json();
+
+    // 2. Python equivalent logic: Calculate sequence
+    let seq = 1;
+    if (currentGameData.Moves && currentGameData.Moves.length > 0) {
+        // Get the sequence of the last move in the array
+        seq = currentGameData.Moves[currentGameData.Moves.length - 1].Sequence;
+    }
+
+    // 3. Construct the 'ret' object equivalent
+    const movePayload = {
+        "GameID": gameId,
+        "Move": {
+            "Sequence": seq + 1,
+            "Timestamp": new Date().toISOString(), // Equivalent to utils.get_timestamp_str()
+            "Player": "{{ user.username }}",
+            "Index": pitIndex,
+        }
+    };
+
+    // 4. Send the move
     const response = await fetch(`/game/${gameId}/mymove`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRFToken': '{{ csrf_token }}'
         },
-        body: JSON.stringify({
-            "GameID": gameId,
-            "Move": pitIndex
-        })
+        body: JSON.stringify(movePayload)
     });
 
-    const updatedBoard = await response.json();
+    if (response.ok) {
+        const updatedBoard = await response.json();
 
-    // Update the history log (on the left)
-    const log = document.getElementById('history-log');
-    log.innerHTML += `<div class="p-2 border-bottom text-primary">You moved Pit ${pitIndex}</div>`;
-    log.scrollTop = log.scrollHeight; // Auto-scroll
-
-    // Re-render the board with the new state
-    renderBoard(updatedBoard);
-    updateTurnDisplay(updatedBoard.Board.Turn);
+        // Update history log
+        const log = document.getElementById('history-log');
+        log.innerHTML += `<div class="p-2 border-bottom text-primary">You moved Pit ${pitIndex} (Seq: ${seq + 1})</div>`;
+        log.scrollTop = log.scrollHeight;
+        // Using loadBoard here is safer to ensure all status checks run
+        loadBoard(gameId);
+    } else {
+        console.error("Move failed to submit.");
+    }
 }
 
 async function submitNewGame() {

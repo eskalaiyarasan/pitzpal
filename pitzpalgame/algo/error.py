@@ -18,7 +18,7 @@ def create_error_class(error_name, value):
 
 class error(utils.Base):
     def __init__(self):
-        with open("rules/json/error.json") as sf:
+        with open("pitzpalgame/rules/json/error.json") as sf:
             data = json.load(sf)
         self._exp = {
             k: create_error_class(k, v)

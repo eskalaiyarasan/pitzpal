@@ -49,7 +49,7 @@ def get_timestamp_str():
     # 1. Generate current time in UTC (Recommended for Logs/Trace)
     now_utc = datetime.now(timezone.utc)
     # 2. To get the specific "Z" suffix (shorthand for Zulu/UTC)
-    z_timestamp = now_utc.strftime("%Y-%m-%dT%H:%M:%SZ")
+    z_timestamp = now_utc.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     return str(z_timestamp)
 
 
