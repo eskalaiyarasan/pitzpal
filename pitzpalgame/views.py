@@ -25,10 +25,10 @@ def start_game(request):
         )
 
 
-def toss_action(request):
+def toss_action(request, game_id):
     if request.method == "POST":
         data = json.loads(request.body)
-        z = get_object_or_404(PitzpalGame, id=data["GameID"])
+        z = get_object_or_404(PitzpalGame, id=game_id)
         y = z.game
         toss.action(y)
         z.game = y
@@ -44,10 +44,9 @@ def toss_action(request):
         )
 
 
-def make_comp_move(request):
+def make_comp_move(request, game_id):
     if request.method == "POST":
-        data = json.loads(request.body)
-        z = get_object_or_404(PitzpalGame, id=data["GameID"])
+        z = get_object_or_404(PitzpalGame, id=game_id)
         y = z.game
         try:
             turn = y["Board"]["Turn"]
@@ -63,7 +62,7 @@ def make_comp_move(request):
             z.save()
             return JsonResponse(
                 {
-                    "GameID": data["GameID"],
+                    "GameID": game_id,
                     "Board": y["Board"],
                     "Toss": y["Toss"],
                     "Status": y["Status"],
@@ -75,7 +74,7 @@ def make_comp_move(request):
             y = z.game
             return JsonResponse(
                 {
-                    "GameID": data["GameID"],
+                    "GameID": game_id,
                     "Board": y["Board"],
                     "Toss": y["Toss"],
                     "Status": y["Status"],
@@ -85,10 +84,10 @@ def make_comp_move(request):
             )
 
 
-def make_move(request):
+def make_move(request, game_id):
     if request.method == "POST":
         data = json.loads(request.body)
-        z = get_object_or_404(PitzpalGame, id=data["GameID"])
+        z = get_object_or_404(PitzpalGame, id=game_id)
         y = z.game
         try:
             turn = y["Board"]["Turn"]
@@ -126,17 +125,16 @@ def make_move(request):
             )
 
 
-def refresh(request):
+def refresh(request, game_id):
     if request.method in ["POST", "GET"]:
-        data = json.loads(request.body)
-        z = get_object_or_404(PitzpalGame, id=data["GameID"])
+        z = get_object_or_404(PitzpalGame, id=game_id)
         y = z.game
         ret = {
-            "GameID": data["GameID"],
+            "GameID": game_id,
             "Board": y["Board"],
-            "Toss": y["Toss"],
             "Error": {"Value": 0},
         }
         if y["Status"] != "toss":
-            ret["Status"] = (y["Status"],)
+            ret["Status"] = y["Status"]
+            ret["Toss"] = y["Toss"]
         return JsonResponse(ret)

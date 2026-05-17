@@ -71,6 +71,123 @@ function toggleSetup() {
     const setupDiv = document.getElementById('game-setup');
     setupDiv.style.display = (setupDiv.style.display === 'none') ? 'block' : 'none';
 }
+async function loadBoard(gameId) {
+    const response = await fetch(`/game/${gameId}/refresh`);
+    const boardData = await response.json();
+
+    // boardData is the JSON matching your board.schema.json
+    renderBoard(boardData);
+
+    // If you have the initUI function from before, call it for the toss result
+    if (typeof initUI === "function") initUI(boardData);
+}
+
+function renderBoard(data) {
+    const container = document.getElementById('board-container');
+    const gameId = data.GameID;
+    const board = data.Board;
+    const pits = board.Pits; // Array of pit objects {Side, Index, Value}
+
+    container.innerHTML = '';
+
+    // 1. Group pits by their "Side" property
+    const sidesMap = {};
+    pits.forEach(pit => {
+        if (!sidesMap[pit.Side]) {
+            sidesMap[pit.Side] = [];
+        }
+        sidesMap[pit.Side].push(pit);
+    });
+
+    // 2. Sort the sides (0, 1, 2, 3...) to ensure consistent UI order
+    const sideIds = Object.keys(sidesMap).sort((a, b) => a - b);
+
+    // 3. Create a layout container (Vertical stack of rows)
+    const boardLayout = document.createElement('div');
+    boardLayout.className = "d-flex flex-column gap-4 w-100";
+
+    sideIds.forEach(sideId => {
+        // Create a Bootstrap Row for this specific side
+        const row = document.createElement('div');
+        row.className = `side-row d-flex justify-content-center gap-2 p-2 border rounded`;
+
+        // Add a label for the side (e.g., "Player 0")
+        row.setAttribute('data-side', sideId);
+
+        // Optional: Mirror the top rows (odd sides) for a "facing each other" look
+        if (sideId % 2 !== 0) {
+            row.classList.add('flex-row-reverse');
+            row.classList.add('bg-light'); // Slight color diff for clarity
+        }
+
+        // 4. Append pits belonging to this side
+        sidesMap[sideId].forEach(pit => {
+            const pitBtn = createPitElement(pit, gameId, board.Turn);
+            row.appendChild(pitBtn);
+        });
+
+        boardLayout.appendChild(row);
+    });
+
+    container.appendChild(boardLayout);
+}
+
+/**
+ * Helper to create a pit button
+ * pit: {Index, Value, Side}
+ */
+function createPitElement(pit, gameId, currentTurn) {
+    const btn = document.createElement('button');
+
+    // Determine color based on side
+    const colors = ['btn-outline-primary', 'btn-outline-danger', 'btn-outline-success', 'btn-outline-warning'];
+    const colorClass = colors[pit.Side] || 'btn-outline-secondary';
+
+    btn.className = `btn ${colorClass} rounded-circle d-flex flex-column align-items-center justify-content-center shadow-sm`;
+    btn.style.width = "65px";
+    btn.style.height = "65px";
+
+    btn.innerHTML = `
+        <span class="fw-bold">${pit.Value}</span>
+        <small style="font-size: 0.6rem;">${pit.Index}</small>
+    `;
+
+    // Logic: You can only move if it's your turn AND the pit belongs to your side
+    // (Assuming Player 0 is the logged-in user)
+    if (currentTurn === 0 && pit.Side === 0 && pit.Value > 0) {
+        btn.onclick = () => submitMove(gameId, pit.Index);
+    } else {
+        btn.disabled = true;
+        btn.classList.add('opacity-75');
+    }
+
+    return btn;
+}
+
+async function submitMove(gameId, pitIndex) {
+    const response = await fetch(`/${gameId}/mymove`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            "GameID": gameId,
+            "Move": pitIndex
+        })
+    });
+
+    const updatedBoard = await response.json();
+
+    // Update the history log (on the left)
+    const log = document.getElementById('history-log');
+    log.innerHTML += `<div class="p-2 border-bottom text-primary">You moved Pit ${pitIndex}</div>`;
+    log.scrollTop = log.scrollHeight; // Auto-scroll
+
+    // Re-render the board with the new state
+    renderBoard(updatedBoard);
+    updateTurnDisplay(updatedBoard.Board.Turn);
+}
 
 async function submitNewGame() {
     const gameName = document.getElementById('game-name-select').value;
