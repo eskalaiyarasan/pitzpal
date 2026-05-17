@@ -58,7 +58,13 @@ def createConfig(name: dict, level: dict):
     if "Value" in name and "Value" in level:
         algo = name["Value"]
         diffx = level["Value"]
-        result, ret = _create(algo, diffx, ret, "rules/json/classic.json", "classic")
-        result, ret = _create(algo, diffx, ret, "rules/json/one.json", "one")
-        result, ret = _create(algo, diffx, ret, "rules/json/pod.json", "pod")
+        result, ret = _create(
+            algo, diffx, ret, "pitzpalgame/rules/json/classic.json", "classic"
+        )
+        result, ret = _create(
+            algo, diffx, ret, "pitzpalgame/rules/json/one.json", "one"
+        )
+        result, ret = _create(
+            algo, diffx, ret, "pitzpalgame/rules/json/pod.json", "pod"
+        )
     return ret

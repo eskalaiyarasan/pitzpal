@@ -6,8 +6,8 @@ from datetime import datetime, timedelta, timezone
 
 import jsonschema
 
-# directory = "pitzpalgame/rules/schema"
-directory = "rules/schema"
+directory = "pitzpalgame/rules/schema"
+# directory = "rules/schema"
 store = {}
 _once = True
 
