@@ -86,8 +86,8 @@ function renderGameOver(data) {
 
     // Initialize map variables to parse scores
     let scores = {};
-    if (data.Store && data.Store.length > 0) {
-        data.Store.forEach(store => {
+    if (data.Board.Store && data.Board.Store.length > 0) {
+        data.Board.Store.forEach(store => {
             const [[side, value]] = Object.entries(store);
             scores[side] = parseInt(value, 10);
         });
