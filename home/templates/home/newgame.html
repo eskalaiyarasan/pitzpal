@@ -63,7 +63,6 @@
                         <div id="board-container" class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -75,30 +74,38 @@ function toggleSetup() {
     const setupDiv = document.getElementById('game-setup');
     setupDiv.style.display = (setupDiv.style.display === 'none') ? 'block' : 'none';
 }
-async function loadBoard(gameId) {
-    const response = await fetch(`/game/${gameId}/refresh`);
-    const data = await response.json();
-    const currentUsername = "{{ user.username }}";
-    // Check the Status field from your JSON schema
-    if (data.Status === "toss") {
-         renderTossView(gameId);
-    } else {
-        const currentTurn = data.Board.Turn;
-        const myData = data.Toss.find(p => p.Player === currentUsername);
-        const mySide = myData ? myData.Side : null;
-        const aiBtn = document.getElementById('ai-move-btn');
-        if (currentTurn !== mySide) {
-            aiBtn.style.display = "block";
-            aiBtn.innerText = "Perform Opponent Move"; // Clearer labeling
-        } else {
-            aiBtn.style.display = "none";
-        }
 
-        renderPlayerNames(data)
-        renderBoard(data);
-        // Hide the toss area if it was visible
-        const tossArea = document.getElementById('toss-display');
-        if (tossArea) tossArea.innerHTML = '';
+async function loadBoard(gameId) {
+    try {
+        const response = await fetch(`/game/${gameId}/refresh`);
+        const data = await response.json();
+        const currentUsername = "{{ user.username }}";
+
+        if (data.Status === "toss") {
+             renderTossView(gameId);
+        } else {
+            const currentTurn = data.Board ? data.Board.Turn : 0;
+            const myData = data.Toss ? data.Toss.find(p => p.Player === currentUsername) : null;
+            const mySide = myData ? myData.Side : null;
+            const aiBtn = document.getElementById('ai-move-btn');
+
+            if (currentTurn !== mySide) {
+                aiBtn.style.display = "block";
+                aiBtn.innerText = "Perform Opponent Move";
+            } else {
+                aiBtn.style.display = "none";
+            }
+
+            // Render components safely
+            renderStore(data);
+            renderPlayerNames(data);
+            renderBoard(data);
+
+            const tossArea = document.getElementById('toss-display');
+            if (tossArea) tossArea.innerHTML = '';
+        }
+    } catch (err) {
+        console.error("Failed to load layout updates:", err);
     }
 }
 
@@ -106,12 +113,10 @@ function renderPlayerNames(data) {
     const area = document.getElementById('toss-result');
     if (!data.Toss || data.Toss.length === 0) return;
 
-    // Sort players by Side (0 first, then 1)
     const sortedPlayers = [...data.Toss].sort((a, b) => a.Side - b.Side);
-    const currentTurn = data.Board.Turn;
+    const currentTurn = data.Board ? data.Board.Turn : 0;
 
     area.innerHTML = sortedPlayers.map(p => {
-        // Highlight logic
         const isActive = (p.Side === currentTurn);
         const activeClass = isActive ? 'border-primary bg-primary text-white shadow' : 'bg-light text-muted';
         const activeLabel = isActive ? '<span class="badge bg-warning text-dark ms-2">THINKING...</span>' : '';
@@ -125,16 +130,16 @@ function renderPlayerNames(data) {
         `;
     }).join('');
 }
+
 function updateTurnDisplay(turn) {
-    // Simply re-loading the board is the safest way to sync all UI elements
     const gameId = document.getElementById('display-game-id').innerText;
     loadBoard(gameId);
 }
+
 function renderTossView(gameId) {
     const container = document.getElementById('board-container');
-
     container.innerHTML = `
-        <div class="text-center p-5 border rounded bg-light shadow-sm">
+        <div class="text-center p-5 border rounded bg-light shadow-sm w-100">
             <h2 class="mb-4">Ready to play?</h2>
             <p class="text-muted">Click the button to decide who moves first!</p>
             <button id="toss-btn" class="btn btn-warning btn-lg px-5 py-3 shadow" onclick="handleToss('${gameId}')">
@@ -146,6 +151,8 @@ function renderTossView(gameId) {
 
 async function handleToss(gameId) {
     const btn = document.getElementById('toss-btn');
+    if (!btn) return;
+
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Flipping...';
 
@@ -159,9 +166,9 @@ async function handleToss(gameId) {
         });
 
         if (response.ok) {
-            // After a successful toss, refresh the board
-            // The status will now be 'playing' and the board will render
-            loadBoard(gameId);
+            await loadBoard(gameId);
+        } else {
+            throw new Error("Server rejected flip event status");
         }
     } catch (error) {
         console.error("Toss failed:", error);
@@ -169,11 +176,11 @@ async function handleToss(gameId) {
         btn.innerText = "TOSS AGAIN";
     }
 }
+
 async function triggerUrMove() {
     const gameId = document.getElementById('display-game-id').innerText;
     const btn = document.getElementById('ai-move-btn');
 
-    // Disable button to prevent double-clicks
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Computer is thinking...';
 
@@ -184,39 +191,41 @@ async function triggerUrMove() {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': '{{ csrf_token }}'
             },
-            // The computer move API usually doesn't need a body,
-            // but we send the ID just in case your view expects it.
             body: JSON.stringify({ "GameID": gameId })
         });
 
         if (response.ok) {
-            const updatedData = await response.json();
-
-            // Log the AI move in history
             const log = document.getElementById('history-log');
             log.innerHTML += `<div class="p-2 border-bottom text-danger">Computer performed a move.</div>`;
             log.scrollTop = log.scrollHeight;
-
-            // Refresh everything (this will also hide the AI button automatically)
-            loadBoard(gameId);
+            await loadBoard(gameId);
         } else {
             alert("Computer move failed. Check server logs.");
         }
     } catch (error) {
         console.error("Error triggering computer move:", error);
     } finally {
-        btn.disabled = false;
-        btn.innerText = "Perform Opponent Move";
+        if(btn) {
+            btn.disabled = false;
+            btn.innerText = "Perform Opponent Move";
+        }
     }
 }
+
 function renderStore(data) {
   const container = document.getElementById('store-info');
-  const stores = data.Store; // e.g., [{"0":5}, {"1":2}]
+  if (!container) return;
 
-  // Map over the array objects, pull out the key-value pair, and make a row
+  const stores = data.Board.Store;
+  if (!stores || stores.length === 0) {
+      container.innerHTML = '<div class="text-muted small">No store values available yet.</div>';
+      return;
+  }
+
   const rowsHtml = stores.map(store => {
-    // Extract the key (side) and value (score) from the object
-    const [[side, value]] = Object.entries(store);
+    const entries = Object.entries(store);
+    if(entries.length === 0) return '';
+    const [[side, value]] = entries;
 
     return `
       <tr>
@@ -226,9 +235,8 @@ function renderStore(data) {
     `;
   }).join('');
 
-  // Inject the completed table into the container
   container.innerHTML = `
-    <table class="table table-bordered align-middle m-0">
+    <table class="table table-bordered align-middle m-0 small">
       <thead>
         <tr class="table-light">
           <th>Player Side</th>
@@ -241,14 +249,21 @@ function renderStore(data) {
     </table>
   `;
 }
-function renderBoard(data) {
 
+function renderBoard(data) {
    const container = document.getElementById('board-container');
+   if (!container) return;
+
+   if (!data.Board || !data.Board.Pits) {
+       container.innerHTML = '<div class="text-muted">Initializing game map items...</div>';
+       return;
+   }
+
    const gameId = data.GameID;
    const board = data.Board;
-   const pits = board.Pits; // Array of pit objects {Side, Index, Value}
+   const pits = board.Pits;
    container.innerHTML = '';
-   // 1. Group pits by their "Side" property
+
    const sidesMap = {};
    pits.forEach(pit => {
        if (!sidesMap[pit.Side]) {
@@ -256,24 +271,21 @@ function renderBoard(data) {
        }
        sidesMap[pit.Side].push(pit);
    });
-   // 2. Sort the sides (0, 1, 2, 3...) to ensure consistent UI order
+
    const sideIds = Object.keys(sidesMap).sort((a, b) => a - b);
-   // 3. Create a layout container (Vertical stack of rows)
    const boardLayout = document.createElement('div');
    boardLayout.className = "d-flex flex-column gap-4 w-100";
 
    sideIds.forEach(sideId => {
-       // Create a Bootstrap Row for this specific side
        const row = document.createElement('div');
        row.className = `side-row d-flex justify-content-center gap-2 p-2 border rounded`;
-       // Add a label for the side (e.g., "Player 0")
        row.setAttribute('data-side', sideId);
-       // Optional: Mirror the top rows (odd sides) for a "facing each other" look
+
        if (sideId % 2 !== 0) {
            row.classList.add('flex-row-reverse');
-           row.classList.add('bg-light'); // Slight color diff for clarity
+           row.classList.add('bg-light');
        }
-       // 4. Append pits belonging to this side
+
        sidesMap[sideId].forEach(pit => {
            const pitBtn = createPitElement(pit, gameId, board.Turn);
            row.appendChild(pitBtn);
@@ -282,14 +294,9 @@ function renderBoard(data) {
    });
    container.appendChild(boardLayout);
 }
-/**
- * Helper to create a pit button
- * pit: {Index, Value, Side}
- */
+
 function createPitElement(pit, gameId, currentTurn) {
     const btn = document.createElement('button');
-
-    // Determine color based on side
     const colors = ['btn-outline-primary', 'btn-outline-danger', 'btn-outline-success', 'btn-outline-warning'];
     const colorClass = colors[pit.Side] || 'btn-outline-secondary';
 
@@ -302,8 +309,6 @@ function createPitElement(pit, gameId, currentTurn) {
         <small style="font-size: 0.6rem;">${pit.Index}</small>
     `;
 
-    // Logic: You can only move if it's your turn AND the pit belongs to your side
-    // (Assuming Player 0 is the logged-in user)
     if (currentTurn === 0 && pit.Side === 0 && pit.Value > 0) {
         btn.onclick = () => submitMove(gameId, pit.Index);
     } else {
@@ -315,79 +320,74 @@ function createPitElement(pit, gameId, currentTurn) {
 }
 
 async function submitMove(gameId, pitIndex) {
-    // 1. Get the latest game state to find the last sequence number
-    const refreshResponse = await fetch(`/game/${gameId}/refresh`);
-    const currentGameData = await refreshResponse.json();
+    try {
+        const refreshResponse = await fetch(`/game/${gameId}/refresh`);
+        const currentGameData = await refreshResponse.json();
 
-    // 2. Python equivalent logic: Calculate sequence
-    let seq = 1;
-    if (currentGameData.Moves && currentGameData.Moves.length > 0) {
-        // Get the sequence of the last move in the array
-        seq = currentGameData.Moves[currentGameData.Moves.length - 1].Sequence;
-    }
-
-    // 3. Construct the 'ret' object equivalent
-    const movePayload = {
-        "GameID": gameId,
-        "Move": {
-            "Sequence": seq + 1,
-            "Timestamp": new Date().toISOString(), // Equivalent to utils.get_timestamp_str()
-            "Player": "{{ user.username }}",
-            "Index": pitIndex,
+        let seq = 1;
+        if (currentGameData.Moves && currentGameData.Moves.length > 0) {
+            seq = currentGameData.Moves[currentGameData.Moves.length - 1].Sequence;
         }
-    };
 
-    // 4. Send the move
-    const response = await fetch(`/game/${gameId}/mymove`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify(movePayload)
-    });
+        const movePayload = {
+            "GameID": gameId,
+            "Move": {
+                "Sequence": seq + 1,
+                "Timestamp": new Date().toISOString(),
+                "Player": "{{ user.username }}",
+                "Index": pitIndex,
+            }
+        };
 
-    if (response.ok) {
-        const updatedBoard = await response.json();
+        const response = await fetch(`/game/${gameId}/mymove`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(movePayload)
+        });
 
-        // Update history log
-        const log = document.getElementById('history-log');
-        log.innerHTML += `<div class="p-2 border-bottom text-primary">You moved Pit ${pitIndex} (Seq: ${seq + 1})</div>`;
-        log.scrollTop = log.scrollHeight;
-        // Using loadBoard here is safer to ensure all status checks run
-        loadBoard(gameId);
-    } else {
-        console.error("Move failed to submit.");
+        if (response.ok) {
+            const log = document.getElementById('history-log');
+            log.innerHTML += `<div class="p-2 border-bottom text-primary">You moved Pit ${pitIndex} (Seq: ${seq + 1})</div>`;
+            log.scrollTop = log.scrollHeight;
+            await loadBoard(gameId);
+        } else {
+            console.error("Move failed to submit.");
+        }
+    } catch (e) {
+        console.error(e);
     }
 }
 
 async function submitNewGame() {
-    const gameName = document.getElementById('game-name-select').value;
-    const gameLevel = document.getElementById('level-select').value;
+    try {
+        const gameName = document.getElementById('game-name-select').value;
+        const gameLevel = document.getElementById('level-select').value;
 
-    // Send POST to your Django view
-    const response = await fetch('{% url "api_new_game" %}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({
-            "Name": {"Value": gameName },
-            "Level": {"Value":gameLevel },
-            "Players": ["{{ user.username }}", "Computer"]
-        })
-    });
+        const response = await fetch('{% url "api_new_game" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                "Name": {"Value": gameName },
+                "Level": {"Value":gameLevel },
+                "Players": ["{{ user.username }}", "Computer"]
+            })
+        });
 
-    const data = await response.json();
-    if (data.GameID) {
-        // Transition Views inside the <div>
-        document.getElementById('lobby-view').style.display = 'none';
-        document.getElementById('game-view').style.display = 'block';
-        document.getElementById('display-game-id').innerText = data.GameID;
-
-        // Load the actual board (call your existing board render function)
-        loadBoard(data.GameID);
+        const data = await response.json();
+        if (data.GameID) {
+            document.getElementById('lobby-view').style.display = 'none';
+            document.getElementById('game-view').style.display = 'block';
+            document.getElementById('display-game-id').innerText = data.GameID;
+            await loadBoard(data.GameID);
+        }
+    } catch(e) {
+        console.error(e);
     }
 }
 </script>
