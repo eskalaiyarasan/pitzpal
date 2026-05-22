@@ -6,8 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from . import move, toss
-from . import newgame as ng
+from pitzpalgame import move, toss
+from pitzpalgame import newgame as ng
+
 from .models import PitzpalGame
 
 

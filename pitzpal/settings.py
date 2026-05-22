@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "home",
     "channels",
     "pitzpalgame",
+    "vsComputer",
 ]
 
 MIDDLEWARE = [

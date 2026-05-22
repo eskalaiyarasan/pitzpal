@@ -12,7 +12,7 @@ def home_view(request):
     return render(request, "home/home.html", context)
 
 
-def new_game(request):
+def new_game(request, numPlayers):
     # You can pass data to the template via a dictionary (context)
     context = {
         "page_title": "New game Page",
