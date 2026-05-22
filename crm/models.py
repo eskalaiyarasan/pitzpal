@@ -20,6 +20,32 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+    def complete_game(self, is_win, difficulty):
+        """
+        Updates user stats when a game finishes.
+        difficulty options: 'easy', 'medium', 'hard'
+        """
+        # 1. Always increment total games played
+        self.total += 1
+
+        # 2. Map difficulty to rating points
+        difficulty_points = {"easy": 1, "medium": 2, "hard": 5}
+
+        # Get points based on difficulty (defaults to 1 if something else is passed)
+        points = difficulty_points.get(difficulty.lower(), 1)
+
+        # 3. If they won, increment wins and add rating points
+        if is_win:
+            self.wins += 1
+            self.rating += points
+        else:
+            # Optional: You can subtract points on a loss if you want,
+            # or just leave the rating as is.
+            self.rating -= points
+
+        # 4. Save the changes to the database
+        self.save()
+
 
 # ✅ Friend Request Model
 class FriendRequest(models.Model):

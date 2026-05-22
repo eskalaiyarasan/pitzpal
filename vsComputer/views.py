@@ -49,6 +49,21 @@ def toss_action(request, game_id):
         return JsonResponse(ret)
 
 
+def update_stat_at_end(request, y, out):
+    if out["Status"] == "done" and y["Status"] == "active":
+        print(y)
+        store = out["Board"]["Store"]
+        store.sort(key=lambda obj: list(obj.values())[0], reverse=True)
+        win_side = int(list(store[0].items())[0][0])
+        result = next(
+            (item["Player"] for item in y["Toss"] if item["Side"] == win_side), None
+        )
+        is_win = False
+        if (result is not None) and (result == str(request.user.username)):
+            is_win = True
+        request.user.complete_game(is_win=is_win, difficulty=y["Level"]["Value"])
+
+
 def make_comp_move(request, game_id):
     if request.method == "POST":
         z = get_object_or_404(PitzpalGame, id=game_id)
@@ -58,7 +73,12 @@ def make_comp_move(request, game_id):
             if y["Toss"][turn]["Player"] == "Computer-1ae4de1c-4ac5-3e42ec2d59e0":
                 req = move.createreq(y)
                 outdata = move.move(y, req)
-                y = ast.literal_eval(outdata)
+                out = ast.literal_eval(outdata)
+                try:
+                    update_stat_at_end(request, y, out)
+                except Exception as e:
+                    print(f"update_stat_at_end {e}")
+                y = out
         except Exception as e:
             print(f"exception {e}")
             y = {}
@@ -99,7 +119,12 @@ def make_move(request, game_id):
             if y["Toss"][turn]["Player"] == str(request.user.username):
                 req = data
                 outdata = move.move(y, req)
-                y = ast.literal_eval(outdata)
+                out = ast.literal_eval(outdata)
+                try:
+                    update_stat_at_end(request, y, out)
+                except Exception as e:
+                    print(f"update_stat_at_end {e}")
+                y = out
         except Exception as e:
             print(f"exception {e}")
             y = {}

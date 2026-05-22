@@ -314,7 +314,7 @@ class base:
             ):
                 pass
             elif pit.Active:
-                print("checkout_allpits: save_to_store", pit.Index, pit.Side, pit.Value)
+                # print("checkout_allpits: save_to_store", pit.Index, pit.Side, pit.Value)
                 self.save_to_store(pit.Side, pit.Value)
                 pit.Value = 0
         return True
