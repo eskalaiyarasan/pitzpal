@@ -1,0 +1,149 @@
+# Tamil translation for Pitzpal Game.
+# Copyright (C) 2026
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-04 09:06+0530\n"
+"PO-Revision-Date: 2026-06-04 09:15+0530\n"
+"Last-Translator: AI Collaborator\n"
+"Language-Team: Tamil <ta@li.org>\n"
+"Language: ta\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: crm/templates/registration/login.html:2
+msgid "Pitzpal Login"
+msgstr "பிட்ஸ்பால் உள்நுழைவு"
+
+#: crm/templates/registration/login.html:6
+msgid "Login"
+msgstr "உள்நுழைக"
+
+#: crm/templates/registration/login.html:9
+msgid "Don't have an account?"
+msgstr "கணக்கு இல்லையா?"
+
+#: crm/templates/registration/login.html:9
+msgid "Sign up here"
+msgstr "இங்கே பதிவு செய்யவும்"
+
+#: crm/templates/registration/signup.html:3
+msgid "Create Pitzpal Account"
+msgstr "பிட்ஸ்பால் கணக்கை உருவாக்கவும்"
+
+#: crm/templates/registration/signup.html:7
+msgid "Create Account"
+msgstr "கணக்கை உருவாக்கு"
+
+#: crm/templates/registration/signup.html:11
+msgid "Already have an account?"
+msgstr "ஏற்கனவே கணக்கு உள்ளதா?"
+
+#: crm/templates/registration/signup.html:11
+msgid "Login here"
+msgstr "இங்கே உள்நுழைக"
+
+#: crm/templates/social/friends.html:3
+msgid "Search for friends"
+msgstr "நண்பர்களைத் தேடுங்கள்"
+
+#: crm/templates/social/friends.html:7
+msgid "Friends:"
+msgstr "நண்பர்கள்:"
+
+#: crm/templates/social/requests.html:3
+msgid "Action on Friends : allow/deny"
+msgstr "நண்பர்கள் மீதான நடவடிக்கை: அனுமதி/மறுப்பு"
+
+#: crm/templates/social/requests.html:6
+msgid "Received Friend Requests"
+msgstr "வந்த நண்பர் கோரிக்கைகள்"
+
+#: crm/templates/social/requests.html:10
+#, python-format
+msgid "<strong>%(username)s</strong> sent you a friend request!"
+msgstr "<strong>%(username)s</strong> உங்களுக்கு நண்பர் கோரிக்கை அனுப்பியுள்ளார்!"
+
+#: crm/templates/social/requests.html:13
+msgid "Accept"
+msgstr "ஏற்றுக்கொள்"
+
+#: crm/templates/social/requests.html:14
+msgid "Reject"
+msgstr "நிராகரி"
+
+#: crm/templates/social/requests.html:18
+msgid "No new friend requests."
+msgstr "புதிய நண்பர் கோரிக்கைகள் எதுவும் இல்லை."
+
+#: crm/templates/social/search.html:3
+msgid "Search for  friends"
+msgstr "நண்பர்களைத் தேடுங்கள்"
+
+#: crm/templates/social/search.html:13
+msgid "Send Request"
+msgstr "கோரிக்கை அனுப்பு"
+
+#: home/templates/common/about.html:3
+msgid "About Page"
+msgstr "பக்கம் பற்றி"
+
+#: home/templates/common/about.html:5
+msgid "Welcome to the Aboutpage!"
+msgstr "எங்களைப்பற்றிய பக்கத்திற்கு உங்களை வரவேற்கிறோம்!"
+
+#: home/templates/common/about.html:6
+msgid "Pitzpal Game"
+msgstr "பிட்ஸ்பால் விளையாட்டு"
+
+#: home/templates/common/about.html:7
+msgid "contact @"
+msgstr "தொடர்புக்கு @"
+
+#: home/templates/common/about.html:8
+msgid "email:"
+msgstr "மின்னஞ்சல்:"
+
+#: home/templates/common/about.html:9
+msgid "phone:"
+msgstr "தொலைபேசி:"
+
+#: home/templates/common/about.html:10
+msgid "Pitzpal"
+msgstr "பிட்ஸ்பால்"
+
+#: home/templates/common/base.html:9
+msgid "My Django Site"
+msgstr "எனது ஜாங்கோ தளம்"
+
+#: home/templates/common/base.html:32
+msgid "Friends"
+msgstr "நண்பர்கள்"
+
+#: home/templates/common/base.html:35
+msgid "View"
+msgstr "பார்வையிடு"
+
+#: home/templates/common/base.html:36
+msgid "Search"
+msgstr "தேடு"
+
+#: home/templates/common/base.html:37
+msgid "Request"
+msgstr "கோரிக்கை"
+
+#: home/templates/common/base.html:41
+msgid "About"
+msgstr "பற்றி"
+
+#: home/templates/common/base.html:48
+msgid "Logout"
+msgstr "வெளியேறு"
+
+#: home/templates/common/base.html:59
+msgid "Language:"
+msgstr "மொழி:"

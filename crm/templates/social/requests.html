@@ -1,17 +1,20 @@
 {% extends 'common/base.html' %}
-{% block title %} Action on Friends : allow/deny {% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Action on Friends : allow/deny" %}{% endblock %}
 
 {% block content %}
-<h2>Received Friend Requests</h2>
+<h2>{% trans "Received Friend Requests" %}</h2>
 {% for req in requests %}
     <div class="card border-primary">
-        <tr><strong>{{ req.from_user.username }}</strong> sent you a friend request!</tr>
         <tr>
-            <th><a href="{% url 'accept_request' req.id %}">Accept</a> </th>
-            <th><a href="{% url 'reject_request' req.id %}">Reject</a> </th>
+            {% blocktrans with username=req.from_user.username %}<strong>{{ username }}</strong> sent you a friend request!{% endblocktrans %}
+        </tr>
+        <tr>
+            <th><a href="{% url 'accept_request' req.id %}">{% trans "Accept" %}</a> </th>
+            <th><a href="{% url 'reject_request' req.id %}">{% trans "Reject" %}</a> </th>
         </tr>
     </div>
 {% empty %}
-    <p>No new friend requests.</p>
+    <p>{% trans "No new friend requests." %}</p>
 {% endfor %}
 {% endblock %}

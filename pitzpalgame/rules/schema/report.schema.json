@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "report.schema.json",
+  "title": "Report Schema",
+
+  "$defs": {
+    "Report": {
+      "type": "object",
+      "required": ["EndType"],
+      "properties": {
+        "EndType": {
+          "type": "string",
+          "enum": ["graceful", "abandoned", "resignation", "tie"],
+          "description": "Indicates how the game was concluded."
+        },
+        "Winner": {
+          "type": "object",
+          "required": ["Side", "PlayerName"],
+          "properties": {
+            "Side": {
+              "type": "integer",
+              "description": "The side that won the game."
+            },
+            "Player": {
+              "type": "string",
+              "description": "The name of the winning player."
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+
+      "if": {
+        "properties": {
+          "EndType": { "const": "tie" }
+        }
+      },
+      "then": {
+        "properties": {
+          "Winner": false
+        },
+        "description": "If the game is a tie, the Winner property should not be provided."
+      },
+      "else": {
+        "required": ["Winner"],
+        "description": "If the game is not a tie, a Winner must be specified."
+      }
+    }
+  }
+}

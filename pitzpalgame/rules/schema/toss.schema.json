@@ -14,6 +14,9 @@
         "Side": {
           "type": "integer",
           "minimum": 0
+        },
+        "Active": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false

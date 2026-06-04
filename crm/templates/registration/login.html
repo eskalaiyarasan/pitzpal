@@ -1,9 +1,9 @@
-
-<h2>Pitzpal Login</h2>
+{% load i18n %}
+<h2>{% trans "Pitzpal Login" %}</h2>
 
 <form method="post">
     {% csrf_token %} {{ form.as_p }}
-    <button type="submit">Login</button>
+    <button type="submit">{% trans "Login" %}</button>
 </form>
 <hr />
-<p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a></p>
+<p>{% trans "Don't have an account?" %} <a href="{% url 'signup' %}">{% trans "Sign up here" %}</a></p>

@@ -67,4 +67,7 @@ def createConfig(name: dict, level: dict):
         result, ret = _create(
             algo, diffx, ret, "pitzpalgame/rules/json/pod.json", "pod"
         )
+        result, ret = _create(
+            algo, diffx, ret, "pitzpalgame/rules/json/pro.json", "pro"
+        )
     return ret

@@ -1,5 +1,6 @@
 {% extends 'common/base.html' %}
-{% block title %}Search for  friends {% endblock %}
+{% load i18n %}
+{% block title %} {% trans "Search for  friends"%} {% endblock %}
 
 {% block content %}
 <form method="GET">
@@ -9,7 +10,7 @@
 {% for user in results %}
   <p>
     {{ user.username }}
-    <a href="{% url 'send_request' user.id %}">Send Request</a>
+    <a href="{% url 'send_request' user.id %}"> {% trans "Send Request"%} </a>
   </p>
 {% endfor %}
 {% endblock %}

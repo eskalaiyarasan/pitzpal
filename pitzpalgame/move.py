@@ -1,3 +1,4 @@
+import copy
 import random
 
 from . import game, movereq, utils
@@ -35,3 +36,56 @@ def createreq(y):
             ret["Move"]["Index"] = inp
             choice = False
     return ret
+
+
+def resign(yy, player):
+    y = copy.deepcopy(yy)
+    who = -1
+    for side in y["Toss"]:
+        if player.strip() == side["Player"].strip():
+            who = side["Side"]
+            break
+    if who != -1:
+        for pit in y["Board"]["Pits"]:
+            if y["Config"]["Kingzpits"]:
+                if pit["Index"] in y["Config"]["Kingzpits"]["Value"]:
+                    continue
+            if pit["Side"] == who:
+                pit["Active"] = False
+
+        y["Board"]["Store"][who][str(who)] = 0
+        nps = 0
+        npi = {}
+        for person in y["Toss"]:
+            if person["Side"] == who:
+                person["Active"] = False
+            if person["Active"]:
+                nps += 1
+                npi = person
+        if nps == 1:
+            y["Status"] = "done"
+            y["Report"] = {
+                "EndType": "resignation",
+                "Winner": {"Player": npi["Player"], "Side": npi["Side"]},
+            }
+            print("resign: gameover: winner", npi)
+    return y
+
+
+def updateReport(y, out, player):
+    is_win = False
+    if out["Status"] == "done" and y["Status"] == "active":
+        print(y)
+        store = out["Board"]["Store"]
+        store.sort(key=lambda obj: list(obj.values())[0], reverse=True)
+        win_side = int(list(store[0].items())[0][0])
+        result = next(
+            (item["Player"] for item in y["Toss"] if item["Side"] == win_side), None
+        )
+        if (result is not None) and (result == player):
+            is_win = True
+        out["Report"] = {
+            "EndType": "graceful",
+            "Winner": {"Player": result, "Side": win_side},
+        }
+    return is_win

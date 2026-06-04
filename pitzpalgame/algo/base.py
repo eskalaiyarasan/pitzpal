@@ -2,6 +2,9 @@ import ast
 import copy
 import json
 from abc import abstractmethod
+from datetime import timedelta
+
+from django.utils import timezone  # Used to check actual server time cleanly
 
 from . import error
 from . import internal as internal
@@ -193,8 +196,7 @@ class base:
                 self.prev = -1
                 return True
             elif (
-                self.game.Board.Pits[self.prev].Value % self.game.Config.Early["Value"]
-                == 0
+                self.game.Board.Pits[self.prev].Value == self.game.Config.Early["Value"]
             ):
                 side = self.game.Board.Pits[self.prev].Side
                 value = self.game.Board.Store[side][str(side)]
@@ -229,7 +231,7 @@ class base:
                 self.game.Config.Early["Enable"]
                 and self.game.Config.Early["Value"] != 0
             ) and (
-                self.game.Board.Pits[index].Value % self.game.Config.Early["Value"] == 0
+                self.game.Board.Pits[self.prev].Value == self.game.Config.Early["Value"]
             ):
                 side = self.game.Board.Turn
                 value = self.game.Board.Store[side][str(side)]

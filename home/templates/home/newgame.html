@@ -46,8 +46,8 @@
                 <span>Game ID: <small id="display-game-id"></small></span>
                 <span id="turn-indicator" class="badge bg-light text-dark"></span>
                 <span>
-                    <button id="ai-move-btn" class="btn btn-warning mt-3" style="display:none;" onclick="triggerUrMove()">
-                        Perform Computer Move
+                    <button id="resign-move-btn" class="btn btn-warning mt-3" style="display:none;" onclick="triggerResign()">
+                        Resign
                     </button>
                 </span>
             </div>
@@ -78,7 +78,7 @@ function toggleSetup() {
 function renderGameOver(data) {
     const container = document.getElementById('board-container');
     const tossResultArea = document.getElementById('toss-result');
-    const aiBtn = document.getElementById('ai-move-btn');
+    const aiBtn = document.getElementById('resign-move-btn');
 
     // Hide active gameplay elements we no longer need
     if (aiBtn) aiBtn.style.display = "none";
@@ -185,13 +185,16 @@ async function loadBoard(gameId) {
             const currentTurn = data.Board ? data.Board.Turn : 0;
             const myData = data.Toss ? data.Toss.find(p => p.Player === currentUsername) : null;
             const mySide = myData ? myData.Side : null;
-            const aiBtn = document.getElementById('ai-move-btn');
+            const aiBtn = document.getElementById('resign-move-btn');
 
             if (currentTurn !== mySide) {
-                aiBtn.style.display = "block";
-                aiBtn.innerText = "Perform Opponent Move";
+              aiBtn.style.display = "none";
+              setTimeout(() => {
+                                  triggerUrMove(gameId);
+                              }, 2000);
             } else {
-                aiBtn.style.display = "none";
+              aiBtn.style.display = "block";
+              aiBtn.innerText = "Resign";
             }
 
             // Render components safely
@@ -277,7 +280,7 @@ async function handleToss(gameId) {
 
 async function triggerUrMove() {
     const gameId = document.getElementById('display-game-id').innerText;
-    const btn = document.getElementById('ai-move-btn');
+    const btn = document.getElementById('resign-move-btn');
 
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Computer is thinking...';
@@ -305,11 +308,42 @@ async function triggerUrMove() {
     } finally {
         if(btn) {
             btn.disabled = false;
-            btn.innerText = "Perform Opponent Move";
+            btn.innerText = "Resign";
         }
     }
 }
 
+async function triggerResign() {
+    const gameId = document.getElementById('display-game-id').innerText;
+    const btn = document.getElementById('resign-move-btn');
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Computer is thinking...';
+
+    try {
+        const response = await fetch(`/game/${gameId}/resign`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ "GameID": gameId })
+        });
+
+        if (response.ok) {
+            await loadBoard(gameId);
+        } else {
+            alert("Computer move failed. Check server logs.");
+        }
+    } catch (error) {
+        console.error("Error triggering computer move:", error);
+    } finally {
+        if(btn) {
+            btn.disabled = false;
+            btn.innerText = "Resign";
+        }
+    }
+}
 function renderStore(data) {
   const container = document.getElementById('store-info');
   if (!container) return;

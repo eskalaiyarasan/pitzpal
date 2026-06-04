@@ -1,10 +1,11 @@
+{% load i18n %}
 {% load static %}
-<h2>Create Pitzpal Account</h2>
+<h2>{% trans "Create Pitzpal Account" %}</h2>
 
 <form method="post">
     {% csrf_token %} {{ form.as_p }}
-    <button type="submit">Create Account</button>
+    <button type="submit">{% trans "Create Account" %}</button>
 </form>
 
 <hr />
-<p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+<p>{% trans "Already have an account?" %} <a href="{% url 'login' %}">{% trans "Login here" %}</a></p>

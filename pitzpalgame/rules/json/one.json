@@ -7,8 +7,8 @@
       "Enable": false,
       "Value": []
     },
-    "Nseeds": 4,
-    "PitsPerSide": 5
+    "Nseeds": 3,
+    "PitsPerSide": 4
   },
   "medium": {
     "Relay": {
