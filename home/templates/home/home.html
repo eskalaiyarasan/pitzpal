@@ -1,16 +1,17 @@
 {% extends 'common/base.html' %}
-{% block title %}Home Page{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Home Page"%} {% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row">
         <div id="pitzpal-main-container">
-            <h1>Welcome, {{ user.username }}!</h1>
+            <h1>{% trans "Welcome" %} , {{ user.username }}!</h1>
             <frame>
-            <p><a href="{%url 'new_game' 1 %}"> New Game( vsComputer) </a></p>
+            <p><a href="{%url 'new_game' 1 %}"> {% trans "New Game" %} ({% trans "vsComputer" %}) </a></p>
             </frame>
             <frame>
-            <p><a href="{%url 'game_list' %}"> view my Game </a></p>
+            <p><a href="{%url 'game_list' %}"> {% trans "view my Game" %} </a></p>
             </frame>
         </div>
     </div>
@@ -20,19 +21,19 @@
         <div class="col-md-4">
             <div class="card border-primary">
                 <div class="card-header bg-primary text-white">
-                    Player Statistics
+                    {% trans "Player Statistics" %}
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <strong>Rating</strong>
+                        <strong>{% trans "Rating" %}</strong>
                         <span class="badge bg-success rounded-pill">{{ user.rating }}</span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <strong>Wins</strong>
+                        <strong>{% trans "Wins" %}</strong>
                         <span>{{ user.wins }}</span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <strong>Total games</strong>
+                        <strong>{% trans "Total games" %}</strong>
                         <span>{{ user.total }}</span>
                     </li>
 

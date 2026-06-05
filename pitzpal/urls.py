@@ -26,5 +26,5 @@ urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),
     path("home/", include("home.urls")),
     path("game/", include("vsComputer.urls")),
-    path("about/", views.about_view),
+    path("about/", views.about_view, name="about_us"),
 ]

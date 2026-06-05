@@ -1,149 +1,333 @@
-# Tamil translation for Pitzpal Game.
+# Japanese translation for Pitzpal Game.
 # Copyright (C) 2026
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-04 09:06+0530\n"
+"POT-Creation-Date: 2026-06-04 23:27+0530\n"
 "PO-Revision-Date: 2026-06-04 09:15+0530\n"
 "Last-Translator: AI Collaborator\n"
-"Language-Team: Tamil <ta@li.org>\n"
-"Language: ta\n"
+"Language-Team: Japanese <ja@li.org>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: crm/templates/registration/login.html:2
+#: crm/templates/registration/login.html:4
 msgid "Pitzpal Login"
-msgstr "பிட்ஸ்பால் உள்நுழைவு"
+msgstr "Pitzpal ログイン"
 
-#: crm/templates/registration/login.html:6
+#: crm/templates/registration/login.html:8
+#: crm/templates/registration/signup.html:8 home/templates/common/base.html:9
+msgid "My Django Site"
+msgstr "マイ Django サイト"
+
+#: crm/templates/registration/login.html:17
+#: crm/templates/registration/signup.html:18 home/templates/common/base.html:59
+msgid "Language:"
+msgstr "言語:"
+
+#: crm/templates/registration/login.html:30
 msgid "Login"
-msgstr "உள்நுழைக"
+msgstr "ログイン"
 
-#: crm/templates/registration/login.html:9
+#: crm/templates/registration/login.html:33
 msgid "Don't have an account?"
-msgstr "கணக்கு இல்லையா?"
+msgstr "アカウントをお持ちでないですか？"
 
-#: crm/templates/registration/login.html:9
+#: crm/templates/registration/login.html:33
 msgid "Sign up here"
-msgstr "இங்கே பதிவு செய்யவும்"
+msgstr "ここから新規登録"
 
-#: crm/templates/registration/signup.html:3
+#: crm/templates/registration/login.html:34
+#: crm/templates/registration/signup.html:36 home/templates/common/base.html:41
+#, fuzzy
+#| msgid "About"
+msgid "About-us"
+msgstr "概要"
+
+#: crm/templates/registration/signup.html:14
 msgid "Create Pitzpal Account"
-msgstr "பிட்ஸ்பால் கணக்கை உருவாக்கவும்"
+msgstr "Pitzpal アカウント作成"
 
-#: crm/templates/registration/signup.html:7
+#: crm/templates/registration/signup.html:31
 msgid "Create Account"
-msgstr "கணக்கை உருவாக்கு"
+msgstr "アカウントを作成する"
 
-#: crm/templates/registration/signup.html:11
+#: crm/templates/registration/signup.html:35
 msgid "Already have an account?"
-msgstr "ஏற்கனவே கணக்கு உள்ளதா?"
+msgstr "すでにアカウントをお持ちですか？"
 
-#: crm/templates/registration/signup.html:11
+#: crm/templates/registration/signup.html:35
 msgid "Login here"
-msgstr "இங்கே உள்நுழைக"
+msgstr "ここからログイン"
 
 #: crm/templates/social/friends.html:3
 msgid "Search for friends"
-msgstr "நண்பர்களைத் தேடுங்கள்"
+msgstr "友達を検索"
 
 #: crm/templates/social/friends.html:7
 msgid "Friends:"
-msgstr "நண்பர்கள்:"
+msgstr "友達リスト:"
 
 #: crm/templates/social/requests.html:3
 msgid "Action on Friends : allow/deny"
-msgstr "நண்பர்கள் மீதான நடவடிக்கை: அனுமதி/மறுப்பு"
+msgstr "友達リクエストへの対応：許可/拒否"
 
 #: crm/templates/social/requests.html:6
 msgid "Received Friend Requests"
-msgstr "வந்த நண்பர் கோரிக்கைகள்"
+msgstr "受信した友達リクエスト"
 
 #: crm/templates/social/requests.html:10
 #, python-format
 msgid "<strong>%(username)s</strong> sent you a friend request!"
-msgstr "<strong>%(username)s</strong> உங்களுக்கு நண்பர் கோரிக்கை அனுப்பியுள்ளார்!"
+msgstr "<strong>%(username)s</strong> さんから友達リクエストが届いています！"
 
 #: crm/templates/social/requests.html:13
 msgid "Accept"
-msgstr "ஏற்றுக்கொள்"
+msgstr "承認"
 
 #: crm/templates/social/requests.html:14
 msgid "Reject"
-msgstr "நிராகரி"
+msgstr "拒否"
 
 #: crm/templates/social/requests.html:18
 msgid "No new friend requests."
-msgstr "புதிய நண்பர் கோரிக்கைகள் எதுவும் இல்லை."
+msgstr "新しい友達リクエストはありません。"
 
 #: crm/templates/social/search.html:3
 msgid "Search for  friends"
-msgstr "நண்பர்களைத் தேடுங்கள்"
+msgstr "友達を検索"
 
 #: crm/templates/social/search.html:13
 msgid "Send Request"
-msgstr "கோரிக்கை அனுப்பு"
+msgstr "リクエストを送信"
 
 #: home/templates/common/about.html:3
 msgid "About Page"
-msgstr "பக்கம் பற்றி"
+msgstr "アバウトページ"
 
 #: home/templates/common/about.html:5
 msgid "Welcome to the Aboutpage!"
-msgstr "எங்களைப்பற்றிய பக்கத்திற்கு உங்களை வரவேற்கிறோம்!"
+msgstr "アバウトページへようこそ！"
 
 #: home/templates/common/about.html:6
 msgid "Pitzpal Game"
-msgstr "பிட்ஸ்பால் விளையாட்டு"
+msgstr "Pitzpal ゲーム"
 
 #: home/templates/common/about.html:7
 msgid "contact @"
-msgstr "தொடர்புக்கு @"
+msgstr "お問い合わせ @"
 
 #: home/templates/common/about.html:8
 msgid "email:"
-msgstr "மின்னஞ்சல்:"
+msgstr "メールアドレス:"
 
 #: home/templates/common/about.html:9
 msgid "phone:"
-msgstr "தொலைபேசி:"
+msgstr "電話番号:"
 
-#: home/templates/common/about.html:10
+#: home/templates/common/about.html:10 home/templates/common/base.html:20
 msgid "Pitzpal"
-msgstr "பிட்ஸ்பால்"
-
-#: home/templates/common/base.html:9
-msgid "My Django Site"
-msgstr "எனது ஜாங்கோ தளம்"
+msgstr "Pitzpal"
 
 #: home/templates/common/base.html:32
 msgid "Friends"
-msgstr "நண்பர்கள்"
+msgstr "友達"
 
 #: home/templates/common/base.html:35
 msgid "View"
-msgstr "பார்வையிடு"
+msgstr "一覧を見る"
 
 #: home/templates/common/base.html:36
 msgid "Search"
-msgstr "தேடு"
+msgstr "検索"
 
 #: home/templates/common/base.html:37
 msgid "Request"
-msgstr "கோரிக்கை"
-
-#: home/templates/common/base.html:41
-msgid "About"
-msgstr "பற்றி"
+msgstr "リクエスト"
 
 #: home/templates/common/base.html:48
 msgid "Logout"
-msgstr "வெளியேறு"
+msgstr "ログアウト"
 
-#: home/templates/common/base.html:59
-msgid "Language:"
-msgstr "மொழி:"
+#: home/templates/home/game_list.html:6
+msgid "My Games"
+msgstr ""
+
+#: home/templates/home/game_list.html:7 home/templates/home/home.html:11
+#: home/templates/home/newgame.html:3
+msgid "New Game"
+msgstr ""
+
+#: home/templates/home/game_list.html:21
+msgid "Game-ID"
+msgstr ""
+
+#: home/templates/home/game_list.html:22
+msgid "Opponent"
+msgstr ""
+
+#: home/templates/home/game_list.html:23
+msgid "Status"
+msgstr ""
+
+#: home/templates/home/game_list.html:24
+msgid "Actions"
+msgstr ""
+
+#: home/templates/home/game_list.html:32
+msgid "Computer"
+msgstr ""
+
+#: home/templates/home/game_list.html:41
+msgid "Play"
+msgstr ""
+
+#: home/templates/home/game_list.html:45
+msgid "Delete"
+msgstr ""
+
+#: home/templates/home/game_list.html:52
+msgid "No games found"
+msgstr ""
+
+#: home/templates/home/game_list.html:52
+msgid "Start a new one"
+msgstr ""
+
+#: home/templates/home/home.html:3
+#, fuzzy
+#| msgid "About Page"
+msgid "Home Page"
+msgstr "アバウトページ"
+
+#: home/templates/home/home.html:9 home/templates/home/newgame.html:6
+msgid "Welcome"
+msgstr ""
+
+#: home/templates/home/home.html:11
+msgid "vsComputer"
+msgstr ""
+
+#: home/templates/home/home.html:14
+msgid "view my Game"
+msgstr ""
+
+#: home/templates/home/home.html:24
+msgid "Player Statistics"
+msgstr ""
+
+#: home/templates/home/home.html:28
+msgid "Rating"
+msgstr ""
+
+#: home/templates/home/home.html:32
+msgid "Wins"
+msgstr ""
+
+#: home/templates/home/home.html:36
+msgid "Total games"
+msgstr ""
+
+#: home/templates/home/newgame.html:11
+msgid "Create New Game"
+msgstr ""
+
+#: home/templates/home/newgame.html:17
+msgid "Game Settings"
+msgstr ""
+
+#: home/templates/home/newgame.html:21
+msgid "Game Mode"
+msgstr ""
+
+#: home/templates/home/newgame.html:23
+msgid "Classic Super"
+msgstr ""
+
+#: home/templates/home/newgame.html:24
+msgid "Classic Standard"
+msgstr ""
+
+#: home/templates/home/newgame.html:28
+msgid "Difficulty"
+msgstr ""
+
+#: home/templates/home/newgame.html:30
+msgid "Easy"
+msgstr ""
+
+#: home/templates/home/newgame.html:31
+msgid "Medium"
+msgstr ""
+
+#: home/templates/home/newgame.html:32
+msgid "Hard"
+msgstr ""
+
+#: home/templates/home/newgame.html:51
+msgid "Resign"
+msgstr ""
+
+#: home/templates/home/newgame.html:58
+msgid "Move History"
+msgstr ""
+
+#: home/templates/home/newgame.html:135
+msgid "The game has concluded successfully"
+msgstr ""
+
+#: home/templates/home/newgame.html:144 home/templates/home/newgame.html:155
+msgid "Final Seeds"
+msgstr ""
+
+#: home/templates/home/newgame.html:162
+msgid "eturn to Lobby"
+msgstr ""
+
+#: home/templates/home/newgame.html:245
+msgid "Ready to play"
+msgstr ""
+
+#: home/templates/home/newgame.html:248
+msgid "TOSS"
+msgstr ""
+
+#: home/templates/home/newgame.html:259
+msgid "Flipping"
+msgstr ""
+
+#: home/templates/home/newgame.html:287 home/templates/home/newgame.html:322
+msgid "Computer is thinking"
+msgstr ""
+
+#: home/templates/home/newgame.html:301
+msgid "Computer performed a move"
+msgstr ""
+
+#: home/templates/home/newgame.html:354
+msgid "No store values available yet"
+msgstr ""
+
+#: home/templates/home/newgame.html:365
+msgid "Side"
+msgstr ""
+
+#: home/templates/home/newgame.html:365
+msgid "Store"
+msgstr ""
+
+#: home/templates/home/newgame.html:376
+msgid "Store Count"
+msgstr ""
+
+#: home/templates/home/newgame.html:391
+msgid "Initializing game map items"
+msgstr ""
+
+#: home/templates/home/newgame.html:492
+msgid "You moved Pit"
+msgstr ""
