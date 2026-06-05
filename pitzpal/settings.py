@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 
+from . import __version__
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -140,3 +142,4 @@ STATICFILES_DIRS = [
 
 # This is where files are moved for production (collectstatic)
 STATIC_ROOT = BASE_DIR / "staticfiles"
+APP_VERSION = f"{__version__}"
