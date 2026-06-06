@@ -5,5 +5,5 @@ from django.apps import AppConfig
 logger = logging.getLogger(__name__)
 
 
-class VscomputerConfig(AppConfig):
-    name = "vsComputer"
+class PitzpalgameConfig(AppConfig):
+    name = "pitzpalgame"

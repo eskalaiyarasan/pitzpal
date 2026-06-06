@@ -8,11 +8,12 @@ def move(game_in, data):
     ret = {}
     x = game.game.from_json(game_in)
     req = movereq.movereq.from_json(data)
-    print("move:", data)
+    # print("move:", data)
     try:
         ret = x.move(req)
     except Exception as e:
         print(f"exception : move{data} : {e}")
+    print("move:", ret)
     return str(ret)
 
 

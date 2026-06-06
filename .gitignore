@@ -5,7 +5,10 @@ __pycache__/
 
 # C extensions
 *.so
-
+*.log
+db.sqlite3
+**/migrations/
+**/migration/
 # Distribution / packaging
 .Python
 build/
@@ -52,4 +55,3 @@ coverage.xml
 .vscode/
 .idea/
 *.swp
-

@@ -72,6 +72,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.i18n",
             ],
         },
     },
@@ -113,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en"
 LANGUAGES = [
     ("en", "English"),
     ("ta", "தமிழ்"),  # Tamil written in Tamil
@@ -143,3 +144,56 @@ STATICFILES_DIRS = [
 # This is where files are moved for production (collectstatic)
 STATIC_ROOT = BASE_DIR / "staticfiles"
 APP_VERSION = f"{__version__}"
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,  # Keeps Django's default loggers alive
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} [{module}  {funcName}:{lineno}] {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {asctime} [{module} {funcName}:{lineno}] {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, f"pitzpal_{__version__}_error.log"),
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        # This catches logs from your custom app code
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "pitzpalgame": {  # Use the exact folder name of your Django sub-app
+            "handlers": ["console", "file"],  # Tell it which handler to use
+            "level": "DEBUG",  # Set to DEBUG so you catch absolutely everything
+            "propagate": True,
+        },
+        "vsComputer": {  # Use the exact folder name of your Django sub-app
+            "handlers": ["console", "file"],  # Tell it which handler to use
+            "level": "DEBUG",  # Set to DEBUG so you catch absolutely everything
+            "propagate": True,
+        },
+        # Dedicated logger for database queries (Optional - very noisy!)
+        "django.db.backends": {
+            "handlers": ["console"],
+            "level": "ERROR",  # Change to DEBUG to see raw SQL queries
+            "propagate": False,
+        },
+    },
+}

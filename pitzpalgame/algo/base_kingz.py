@@ -1,25 +1,29 @@
-from . import base_utils as core
+import logging
+
+from . import base_early as core
 from . import error
 from . import internal as internal
 
+logger = logging.getLogger("pitzpalgame")
 
-class kingz(core.base_proxy):
-    def __init__(self, parent):
-        super().__init__(parent)
+
+class kingz(core.early):
+    def __init__(self, game_in, req):
+        logger.info("enter")
+        super().__init__(game_in, req)
         if self.game.Config.Kingzpits["Enable"]:
-            self.capture = [
-                self.capture_action,
-            ]
             self.prechecks.append(self.is_not_kingzpit)
             self.progress.insert(0, self.progress_check_kingpit)
             self.roundsup.insert(0, self.checkout_shares2store)
 
     def is_not_kingzpit(self):
+        logger.info("enter")
         if self.req.Move["Index"] in self.game.Config.Kingzpits["Value"]:
             self.error.raiseExp("IllegalMove")
         return True
 
     def progress_check_kingpit(self):
+        logger.info("enter")
         if self.kai.Value == 0:
             if self.kai.Index in self.game.Config.Kingzpits["Value"]:
                 self.state = internal.State.MOVE_END
@@ -30,16 +34,21 @@ class kingz(core.base_proxy):
         return True
 
     def capture_action(self):
+        logger.info("enter")
+        if not self.game.Config.Kingzpits["Enable"]:
+            return super().capture_action()
+
         index = self.kai.Index
         if index in self.game.Config.Kingzpits["Value"]:
             self.raise_pit_share(index, self.game.Board.Turn)
             self.captured_sucess = True
             self.state = internal.State.MOVE_END
         else:
-            return self.parent.capture_action()
+            return super().capture_action()
         return True
 
     def checkout_shares2store(self):
+        logger.info("enter")
         for index in self.game.Config.Kingzpits["Value"]:
             total_share = 0
             for share in self.game.Board.Pits[index].Share:

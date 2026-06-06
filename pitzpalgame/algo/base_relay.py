@@ -1,18 +1,25 @@
-from . import base_utils as core
+import logging
+
+from . import base_kingz as core
 from . import error
 from . import internal as internal
 
+logger = logging.getLogger("pitzpalgame")
 
-class relay(core.base_proxy):
-    def __init__(self, parent):
-        super().__init__(parent)
+
+class relay(core.kingz):
+    def __init__(self, game_in, req):
+        logger.info("enter")
+        super().__init__(game_in, req)
         if self.game.Config.Relay["Enable"]:
             self.capture = [
                 self.capture_action,
             ]
 
     def capture_action(self):
-        ret = self.parent.capture_action()
-        if self.captured_sucess:
+        logger.info("enter")
+        ret = super().capture_action()
+        if self.captured_sucess and self.game.Config.Relay["Enable"]:
+            self.captured_sucess = False
             self.state = internal.State.MOVE_PROGRESS
         return ret
