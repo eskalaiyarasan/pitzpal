@@ -1,5 +1,4 @@
 from . import movereq
-from .algo import base as base
 from .algo import classic as classic
 from .algo import error
 from .algo import internal as internal

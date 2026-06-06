@@ -1,18 +1,40 @@
 import copy
 
-from . import base as base
+from . import base_core as base
+from . import base_early as early
+from . import base_kingz as kingz
+from . import base_relay as relay
 from . import internal as internal
 
 
-class classic(base.base):
+class classic(base.core):
     def __init__(self, game_in, req):
         super().__init__(game_in, req)
-        self.game = game_in
-        self.req = req
         self.active = True
-        # self.start.append(self.classicstep)
-        # self.capture.append(self.classicstep)
-        # self.progress.append(self.classicstep)
+        self.init_setup()
+        self.progress.append(self.progress_update_pit)
+
+    def init_setup(self):
+        parent = self
+        if self.game.Config.Early["Enable"]:
+            parent = early.early(parent)
+        if self.game.Config.Kingzpits["Enable"]:
+            parent = kingz.kingz(parent)
+        if self.game.Config.Relay["Enable"]:
+            parent = relay.relay(parent)
+
+    def progress_update_pit(self):
+        if self.kai.Value > 0:
+            if self.kai.Value > self.step_value:
+                self.raise_pit_value(self.kai.Index, self.step_value)
+                self.kai.Value -= self.step_value
+            else:
+                self.raise_pit_value(self.kai.Index, self.kai.Value)
+                self.kai.Value = 0
+        else:
+            self.kai.Value = self.get_pit_value(self.kai.Index)
+            self.set_pit_value(self.kai.Index, 0)
+        return True
 
     def classicstep(self):
         if self.kai:

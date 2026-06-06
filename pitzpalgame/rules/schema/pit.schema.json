@@ -6,7 +6,7 @@
   "$defs": {
     "Pit": {
       "type": "object",
-      "required": ["Index", "Active", "Value"],
+      "required": ["Index", "Active", "Value", "Public"],
       "properties": {
         "Index": {
           "type": "integer"
@@ -20,6 +20,10 @@
         },
         "Side": {
           "type": "integer"
+        },
+        "Public": {
+          "type": "boolean",
+          "default": false
         },
         "Share": {
           "type": "array",

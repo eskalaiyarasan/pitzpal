@@ -43,6 +43,7 @@ def createBoard(data: dict):
                     "Index": z,
                     "Active": True,
                     "Side": i,
+                    "Public": False,
                 }
                 if (
                     "Kingzpits" in data
@@ -56,6 +57,7 @@ def createBoard(data: dict):
                         for k in range(data["Nside"]):
                             share.append({str(k): 0})
                     xnew["Share"] = share
+                    xnew["Public"] = True
                 else:
                     xnew["Value"] = data["Nseeds"]
                     total += data["Nseeds"]
