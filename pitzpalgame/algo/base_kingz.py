@@ -9,7 +9,7 @@ logger = logging.getLogger("pitzpalgame")
 
 class kingz(core.early):
     def __init__(self, game_in, req):
-        logger.info("enter")
+        logger.debug("enter")
         super().__init__(game_in, req)
         if self.game.Config.Kingzpits["Enable"]:
             self.prechecks.append(self.is_not_kingzpit)
@@ -17,13 +17,13 @@ class kingz(core.early):
             self.roundsup.insert(0, self.checkout_shares2store)
 
     def is_not_kingzpit(self):
-        logger.info("enter")
+        logger.debug("enter")
         if self.req.Move["Index"] in self.game.Config.Kingzpits["Value"]:
             self.error.raiseExp("IllegalMove")
         return True
 
     def progress_check_kingpit(self):
-        logger.info("enter")
+        logger.debug("enter")
         if self.kai.Value == 0:
             if self.kai.Index in self.game.Config.Kingzpits["Value"]:
                 self.state = internal.State.MOVE_END
@@ -34,7 +34,7 @@ class kingz(core.early):
         return True
 
     def capture_action(self):
-        logger.info("enter")
+        logger.debug("enter")
         if not self.game.Config.Kingzpits["Enable"]:
             return super().capture_action()
 
@@ -48,7 +48,7 @@ class kingz(core.early):
         return True
 
     def checkout_shares2store(self):
-        logger.info("enter")
+        logger.debug("enter")
         for index in self.game.Config.Kingzpits["Value"]:
             total_share = 0
             for share in self.game.Board.Pits[index].Share:

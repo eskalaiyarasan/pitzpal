@@ -19,7 +19,9 @@ class classic(relay.relay):
         logger.info(f"exit {game_in}")
 
     def progress_update_pit(self):
-        logger.info("enter")
+        logger.info(
+            f"enter: [{self.kai.Index} : {self.kai.Value}] {self.get_pit_value(self.kai.Index)}"
+        )
         if self.kai.Value > 0:
             if self.kai.Value > self.step_value:
                 self.raise_pit_value(self.kai.Index, self.step_value)
@@ -30,7 +32,9 @@ class classic(relay.relay):
         else:
             self.kai.Value = self.get_pit_value(self.kai.Index)
             self.set_pit_value(self.kai.Index, 0)
-        logger.info("exit True")
+        logger.info(
+            f"exit True: [{self.kai.Index} : {self.kai.Value}] {self.get_pit_value(self.kai.Index)}"
+        )
         return True
 
     def classicstep(self):
