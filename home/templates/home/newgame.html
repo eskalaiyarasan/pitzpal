@@ -2,6 +2,20 @@
 {% load i18n %}
 {% block title %} {% trans "New Game" %} {% endblock %}
 {% block content %}
+<style>
+    /* Pulse glow effect for pits receiving seeds */
+    .animated-glow {
+        transform: scale(1.12);
+        box-shadow: 0 0 20px rgba(255, 193, 7, 0.95) !important;
+        border-color: #ffc107 !important;
+        background-color: #fff3cd !important;
+        transition: all 0.2s ease-in-out;
+        z-index: 10;
+    }
+    .pit-transition {
+        transition: all 0.4s ease;
+    }
+</style>
 <div id="pitzpal-main-container">
     <h1>{% trans "Welcome" %}, {{ user.username }}!</h1>
 
@@ -71,6 +85,7 @@
 </div>
 
 <script>
+let isAnimationPlaying = false;
 function toggleSetup() {
     const setupDiv = document.getElementById('game-setup');
     setupDiv.style.display = (setupDiv.style.display === 'none') ? 'block' : 'none';
@@ -315,7 +330,36 @@ async function handleToss(gameId) {
         btn.innerText = "TOSS AGAIN";
     }
 }
+function disableAllInputs(disable) {
+    document.querySelectorAll('#board-container button').forEach(btn => {
+        btn.disabled = disable;
+    });
+    const resignBtn = document.getElementById('resign-move-btn');
+    if (resignBtn) resignBtn.disabled = disable;
+}
+async function animateMoveDetails(detail) {
+    if (!detail || detail.length === 0) return;
+    isAnimationPlaying = true;
+    disableAllInputs(true);
 
+    for (const step of details) {
+      if ("Store" in step) {
+        updateAndGlowStore(step.Store)
+      }
+      if("Index" in step){
+        const pitButton = document.querySelector(`button[data-pit-index="${step.Index}"]`);
+        pitButton.classList.add('animated-glow');
+        if("Value" in step){
+          const valueDisplay = pitButton.querySelector('.pit-value');
+          if (valueDisplay) {
+              valueDisplay.innerText = step.Value;
+          }
+        }
+      }
+    }
+    isAnimationPlaying = false;
+    disableAllInputs(false);
+}
 async function triggerUrMove() {
     const gameId = document.getElementById('display-game-id').innerText;
     const btn = document.getElementById('resign-move-btn');
@@ -334,6 +378,8 @@ async function triggerUrMove() {
         });
 
         if (response.ok) {
+            resp = await response.json();
+            await animateMoveDetails(resp.Detail)
             await loadBoard(gameId);
         } else {
             alert("Computer move failed. Check server logs.");
@@ -379,7 +425,6 @@ async function triggerResign() {
         }
     }
 }
-
 function renderStore(data) {
   const container = document.getElementById('store-info');
   if (!container) return;
@@ -395,10 +440,11 @@ function renderStore(data) {
     if(entries.length === 0) return '';
     const [[side, value]] = entries;
 
+    // Added 'pit-transition' and 'data-side' to the row
     return `
-      <tr>
+      <tr data-side="${side}" class="pit-transition">
         <th scope="row">{% trans "Side" %} ${side} {% trans "Store" %}</th>
-        <td class="fw-bold text-center">${value}</td>
+        <td class="fw-bold text-center value-cell">${value}</td>
       </tr>
     `;
   }).join('');
@@ -416,6 +462,28 @@ function renderStore(data) {
       </tbody>
     </table>
   `;
+}
+
+// Function to handle the input, update the value, and trigger your glow
+function updateAndGlowStore(input) {
+  const [[side, newValue]] = Object.entries(input);
+  const targetRow = document.querySelector(`tr[data-side="${side}"]`);
+
+  if (targetRow) {
+    // 1. Update the value cell text
+    const valueCell = targetRow.querySelector('.value-cell');
+    if (valueCell) {
+      valueCell.textContent = newValue;
+    }
+
+    // 2. Apply your existing animated-glow class
+    targetRow.classList.add('animated-glow');
+
+    // 3. Remove the glow after 800ms so it smoothly scales down and fades out
+    setTimeout(() => {
+      targetRow.classList.remove('animated-glow');
+    }, 800);
+  }
 }
 
 function renderBoard(data, myside) {
@@ -471,9 +539,10 @@ function createPitElement(pit, gameId, currentTurn, myside) {
     btn.className = `btn ${colorClass} rounded-circle d-flex flex-column align-items-center justify-content-center shadow-sm`;
     btn.style.width = "65px";
     btn.style.height = "65px";
+    btn.setAttribute('data-pit-index', pit.Index);
 
     btn.innerHTML = `
-        <span class="fw-bold">${pit.Value}</span>
+        <span class="fw-bold pit-value">${pit.Value}</span>
         <small style="font-size: 0.6rem;">${pit.Index}</small>
     `;
 
@@ -522,6 +591,8 @@ async function submitMove(gameId, pitIndex) {
         });
 
         if (response.ok) {
+            resp = await response.json();
+            await animateMoveDetails(resp.Detail)
             await loadBoard(gameId);
         } else {
             console.error("Move failed to submit.");
