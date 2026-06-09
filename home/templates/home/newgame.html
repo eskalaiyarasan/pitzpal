@@ -182,20 +182,20 @@ function renderMoveHistory(data) {
     const currentUsername = "{{ user.username }}";
 
     // Sort moves by sequence to ensure proper chronological layout order
-    const sortedMoves = [...data.Moves].sort((a, b) => a.Sequence - b.Sequence);
+    const sortedMoves = [...data.Moves].sort((a, b) => a.Move.Sequence - b.Move.Sequence);
 
     log.innerHTML = sortedMoves.map(move => {
-        const isMe = move.Player === currentUsername;
+        const isMe = move.Move.Player === currentUsername;
         const colorClass = isMe ? 'text-primary' : 'text-danger';
-        const displayName = isMe ? '{% trans "You" %}' : move.Player.split('-')[0]; // cleaner handling if computer uuid is trailing
+        const displayName = isMe ? '{% trans "You" %}' : move.Move.Player.split('-')[0]; // cleaner handling if computer uuid is trailing
 
         return `
             <div class="p-2 border-bottom d-flex justify-content-between align-items-center">
                 <div>
                     <span class="fw-bold ${colorClass}">${displayName}</span>
-                    <span>{% trans "moved Pit" %} <strong>${move.Index}</strong></span>
+                    <span>{% trans "moved Pit" %} <strong>${move.Move.Index}</strong></span>
                 </div>
-                <span class="badge bg-secondary text-white font-monospace small">#${move.Sequence}</span>
+                <span class="badge bg-secondary text-white font-monospace small">#${move.Move.Sequence}</span>
             </div>
         `;
     }).join('');
@@ -499,7 +499,7 @@ async function submitMove(gameId, pitIndex) {
 
         let seq = 1;
         if (currentGameData.Moves && currentGameData.Moves.length > 0) {
-            seq = currentGameData.Moves[currentGameData.Moves.length - 1].Sequence;
+            seq = currentGameData.Moves[currentGameData.Moves.length - 1].Move.Sequence;
         }
 
         const movePayload = {

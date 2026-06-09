@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "movedes.schema.json",
+  "title": "move description Schema",
+
+  "$defs": {
+    "MoveDes": {
+      "type": "object",
+      "required": ["Move"],
+      "properties": {
+        "Move": {
+          "$ref": "move.schema.json#/$defs/Move"
+        },
+        "Details": {
+          "type": "array",
+          "items": {
+            "$ref": "movedetail.schema.json#/$defs/Detail"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -25,6 +25,7 @@ class core(base.base_utils):
         self.kai = None
         self.captured_sucess = False
         self.skip_early = False
+        self.nRound = 0
         self.prechecks = [
             self.is_game_active,
             self.is_valid_req,
@@ -40,7 +41,6 @@ class core(base.base_utils):
         ]
         self.end = [
             self.update_next_turn,
-            self.update_moves2games,
             self.check_roundsup,
             self.check_gameend,
         ]
@@ -72,9 +72,11 @@ class core(base.base_utils):
                     break
         logger.debug("exit")
 
-    def result(self):
+    def result(self, detail=[]):
         logger.debug("enter")
         self.step_base()
+        self.update_moves2games()
+        detail[:] = copy.deepcopy(self.detail)
         # pause = input("pause:")
         # print("pause", self.game)
         logger.debug(f"exit {self.game}")
@@ -122,7 +124,7 @@ class core(base.base_utils):
         if internal.is_time_expire(self.req.Move["Timestamp"], 900):
             self.error.raiseExp("Timeout")
         if len(self.game.Moves) > 1:
-            if self.req.Move["Sequence"] != self.game.Moves[-1]["Sequence"] + 1:
+            if self.req.Move["Sequence"] != self.game.Moves[-1]["Move"]["Sequence"] + 1:
                 self.error.raiseExp("IllegalMove")
 
         if self.req.Move["Index"] >= self.max_index or self.req.Move["Index"] < 0:
@@ -151,10 +153,12 @@ class core(base.base_utils):
         logger.debug("enter")
         index = self.req.Move["Index"]
         self.captured_sucess = False
+        self.detail = []
+        self.nRound = 1
         for pit in self.game.Board.Pits:
             if pit.Active and pit.Index == index:
                 self.kai = copy.deepcopy(pit)
-                pit.Value = 0
+                self.set_pit_value(pit.Index, 0)
                 logger.info(f"{index}<- 0 ")
                 break
         self.state = internal.State.MOVE_PROGRESS
@@ -190,13 +194,15 @@ class core(base.base_utils):
 
     def update_moves2games(self):
         logger.debug("enter")
-        mvx = self.req.Move
+        mvx = {"Move": self.req.Move, "Details": self.detail}
         self.game.Moves.append(mvx)
         logger.debug("exit True")
         return True
 
     def do_roundsup(self):
         logger.debug("enter")
+        self.detail.append({"RoundUp": True})
+        self.nRound += 1
         for cond in self.roundsup:
             if callable(cond):
                 cond()

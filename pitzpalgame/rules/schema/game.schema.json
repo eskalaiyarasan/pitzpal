@@ -48,7 +48,7 @@
         "Moves": {
           "type": "array",
           "items": {
-            "$ref": "move.schema.json#/$defs/Move"
+            "$ref": "movedes.schema.json#/$defs/MoveDes"
           }
         },
         "Report": {

@@ -30,7 +30,7 @@ class game(utils.Base):
             instance._storage["Board"] = board.Board.from_json(data["Board"])
         return instance
 
-    def move(self, data: movereq.movereq):
+    def move(self, data: movereq.movereq, detail):
         # if self.GameID != data.GameID:
         #     error.error().raiseExp("GameMismatch")
-        return engine.move(self, data)
+        return engine.move(self, data, detail)

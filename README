@@ -1,0 +1,20 @@
+==========================================
+Tasks:
+    1. details for a move to be added. for better clarity.
+       settings menu to be added, game preferance show details of a move or not needed.
+    2. rules documents to be added. it has show on creating the new game
+    3. remove the pod, instead of pod, fast is going to be used
+        fast : improvement in gameend scenario, instead of losing all the pits.
+                game end if any player has only one pit at a time. This is to avoid cyclic
+                behavior of the game.
+        options are
+            1. classic fast
+            2. classic kingz pit
+            3. classic kingz pit fast
+            4. classic relay
+            5. classic kingz pit relay
+    4. update the report win/loss who is the winner. ist place,second place ...
+    5. matchmaking, queue and real-time 2 player game.
+    6. Translate for tamil po
+
+===============================================

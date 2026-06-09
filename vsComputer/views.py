@@ -113,7 +113,8 @@ def make_comp_move(request, game_id):
             turn = y["Board"]["Turn"]
             if y["Toss"][turn]["Player"] == "Computer-1ae4de1c-4ac5-3e42ec2d59e0":
                 req = move.createreq(y)
-                outdata = move.move(y, req)
+                detail = []
+                outdata = move.move(y, req, detail)
                 logger.info(f"move: {outdata}")
                 out = ast.literal_eval(outdata)
                 try:
@@ -130,6 +131,7 @@ def make_comp_move(request, game_id):
                         "Toss": y["Toss"],
                         "Status": y["Status"],
                         "Moves": y["Moves"],
+                        "Detail": detail,
                         "Error": {"Value": 0},
                     }
                 )
@@ -203,7 +205,8 @@ def make_move(request, game_id):
             turn = y["Board"]["Turn"]
             if y["Toss"][turn]["Player"] == str(request.user.username):
                 req = data
-                outdata = move.move(y, req)
+                detail = []
+                outdata = move.move(y, req, detail)
                 logger.info(f"move {outdata}")
                 out = ast.literal_eval(outdata)
                 try:
@@ -222,6 +225,7 @@ def make_move(request, game_id):
                         "Status": y["Status"],
                         "Error": {"Value": 0},
                         "Moves": y["Moves"],
+                        "Detail": detail,
                     }
                 )
         except Exception as e:

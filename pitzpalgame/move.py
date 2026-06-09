@@ -4,13 +4,13 @@ import random
 from . import game, movereq, utils
 
 
-def move(game_in, data):
+def move(game_in, data, detail=[]):
     ret = {}
     x = game.game.from_json(game_in)
     req = movereq.movereq.from_json(data)
     # print("move:", data)
     try:
-        ret = x.move(req)
+        ret = x.move(req, detail)
     except Exception as e:
         print(f"exception : move{data} : {e}")
     print("move:", ret)
@@ -22,7 +22,7 @@ def createreq(y):
     seq = 1
     turn = y["Board"]["Turn"]
     if ("Moves" in y) and (len(y["Moves"]) > 0):
-        seq = y["Moves"][-1]["Sequence"]
+        seq = y["Moves"][-1]["Move"]["Sequence"]
     ret["Move"]["Sequence"] = seq + 1
     ret["Move"]["Timestamp"] = utils.get_timestamp_str()
     ret["Move"]["Player"] = y["Toss"][turn]["Player"]

@@ -4,7 +4,7 @@ from .algo import error
 from .algo import internal as internal
 
 
-def move(game_in, req: movereq.movereq):
+def move(game_in, req: movereq.movereq, detail):
     _algo = None
     if game_in.Config.Algorithm["Value"].strip() == "classic":
         print("classic is chosen")
@@ -18,6 +18,6 @@ def move(game_in, req: movereq.movereq):
             if _algo.state == internal.State.MOVE_ERROR:
                 error.error().raiseExp("IllegalMove")
 
-        return _algo.result()
+        return _algo.result(detail)
     else:
         error.error().raiseExp("IllegalOptions")
