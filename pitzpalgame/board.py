@@ -49,6 +49,7 @@ def createBoard(data: dict):
                     "Kingzpits" in data
                     and "Enable" in data["Kingzpits"]
                     and data["Kingzpits"]["Enable"]
+                    and (z in data["Kingzpits"]["Value"])
                 ):
                     value = data["Kingzpits"]["Value"]
                     share = []
@@ -63,5 +64,5 @@ def createBoard(data: dict):
                     total += data["Nseeds"]
 
                 pits.append(xnew)
-        ret = {"Pits": pits, "Turn": 0, "TotalSeeds": total, "Store": store}
+            ret = {"Pits": pits, "Turn": 0, "TotalSeeds": total, "Store": store}
     return ret

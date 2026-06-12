@@ -25,9 +25,8 @@ class early(core.core):
         logger.debug("enter")
         if self.get_pit_value(self.prev) == self.game.Config.Early["Value"]:
             self.move_to_store(self.prev)
-        if self.skip_early:
-            self.skip_early = False
-        elif self.state == internal.State.MOVE_PROGRESS:
+
+        if self.state == internal.State.MOVE_PROGRESS:
             self.prev = self.kai.Index
         else:
             self.prev = -1

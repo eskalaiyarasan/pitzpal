@@ -41,10 +41,12 @@ class base_utils:
             if side is None:
                 side = self.game.Board.Pits[index].Side
             value = self.game.Board.Pits[index].Value
-            self.detail.append({"Index": index, "Value": 0})
-            self.save_to_store(side, value)
-            self.game.Board.Pits[index].Value = 0
-            logger.info(f"exit: {index} ->@ {side}")
+            public = self.game.Board.Pits[index].Public
+            if public is False:
+                self.detail.append({"Index": index, "Value": 0})
+                self.save_to_store(side, value)
+                self.game.Board.Pits[index].Value = 0
+                logger.info(f"exit: {index} ->@ {side}")
 
     def get_pit_value(self, index):
         logger.debug("enter")

@@ -28,9 +28,6 @@ class kingz(core.early):
             if self.kai.Index in self.game.Config.Kingzpits["Value"]:
                 self.state = internal.State.MOVE_END
                 return False
-
-        if self.prev in self.game.Config.Kingzpits["Value"]:
-            self.skip_early = True
         return True
 
     def capture_action(self):

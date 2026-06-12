@@ -34,8 +34,8 @@
                     <div class="col-md-6">
                         <label class="form-label">{% trans "Game Mode" %}</label>
                         <select id="game-name-select" class="form-select">
-                            <option value="classic_one_pod">{% trans "Classic Soft" %}</option>
-                            <option value="classic_one_pro">{% trans "Classic Standard" %} </option>
+                            <option value="classic_one">{% trans "Classic Standard" %} </option>
+                            <option value="classic_kingz">{% trans "Classic Premium" %}</option>
                         </select>
                     </div>
                     <div class="col-md-6">
@@ -342,7 +342,10 @@ async function animateMoveDetails(detail) {
     isAnimationPlaying = true;
     disableAllInputs(true);
 
-    for (const step of details) {
+    // Helper function to create a delay between animation steps
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    for (const step of detail) {
       if ("Store" in step) {
         updateAndGlowStore(step.Store)
       }
@@ -354,8 +357,15 @@ async function animateMoveDetails(detail) {
           if (valueDisplay) {
               valueDisplay.innerText = step.Value;
           }
+
         }
+        // Remove the glow after 500ms so the next pit can animate cleanly
+          setTimeout(() => {
+              pitButton.classList.remove('animated-glow');
+          }, 500);
       }
+      // 2. Pause for 600ms between each seed dropping step so humans can track it
+      await sleep(600);
     }
     isAnimationPlaying = false;
     disableAllInputs(false);
@@ -543,7 +553,6 @@ function createPitElement(pit, gameId, currentTurn, myside) {
 
     btn.innerHTML = `
         <span class="fw-bold pit-value">${pit.Value}</span>
-        <small style="font-size: 0.6rem;">${pit.Index}</small>
     `;
 
     if (pit.Active === false) {

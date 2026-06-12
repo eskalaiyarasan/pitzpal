@@ -24,7 +24,7 @@ class core(base.base_utils):
         self.step_value = 1
         self.kai = None
         self.captured_sucess = False
-        self.skip_early = False
+
         self.nRound = 0
         self.prechecks = [
             self.is_game_active,

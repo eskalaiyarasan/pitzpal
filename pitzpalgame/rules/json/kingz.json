@@ -4,21 +4,21 @@
       "Enable": false
     },
     "Kingzpits": {
-      "Enable": false,
-      "Value": []
+      "Enable": true,
+      "Value": [2, 7]
     },
-    "Nseeds": 5,
-    "PitsPerSide": 4
+    "Nseeds": 4,
+    "PitsPerSide": 5
   },
   "medium": {
     "Relay": {
       "Enable": false
     },
     "Kingzpits": {
-      "Enable": false,
-      "Value": []
+      "Enable": true,
+      "Value": [3, 10]
     },
-    "Nseeds": 5,
+    "Nseeds": 6,
     "PitsPerSide": 7
   },
   "hard": {
@@ -26,10 +26,10 @@
       "Enable": false
     },
     "Kingzpits": {
-      "Enable": false,
-      "Value": []
+      "Enable": true,
+      "Value": [5, 12]
     },
-    "Nseeds": 10,
+    "Nseeds": 12,
     "PitsPerSide": 11
   }
 }
