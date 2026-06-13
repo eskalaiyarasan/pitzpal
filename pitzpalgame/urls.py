@@ -21,11 +21,5 @@ from django.urls import include, path
 from . import views
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", include("crm.urls")),
-    path("i18n/", include("django.conf.urls.i18n")),
-    path("home/", include("home.urls")),
-    path("game/", include("vsComputer.urls")),
-    path("about/", views.about_view, name="about_us"),
-    path("doc/", include("pitzpalgame.urls")),
+    path("<str:name>_<str:level>", views.about_game, name="about_game"),
 ]

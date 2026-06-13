@@ -256,8 +256,8 @@ class core(base.base_utils):
             rett = self.do_roundsup()
             logger.debug(f"exit : {rett}")
             return rett
-        logger.debug("exit True")
-        return True
+        logger.debug("exit False")
+        return False
 
     def is_gameover(self):
         logger.debug("enter")

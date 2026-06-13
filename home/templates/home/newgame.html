@@ -49,12 +49,34 @@
                 </div>
                 <div class="mt-3 text-end">
                     <button class="btn btn-outline-secondary me-2" onclick="toggleSetup()">{% trans "Cancel" %}</button>
-                    <button class="btn btn-success" onclick="submitNewGame()">{% trans "Start Game" %}</button>
+                    <button class="btn btn-success" onclick="showGameRules()">{% trans "Start Game" %}</button>
                 </div>
             </div>
         </div>
     </div>
-
+    <div class="modal fade" id="rulesModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="rulesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title id="rulesModalLabel" class="fw-bold">
+                        <i class="bi bi-book text-primary me-2"></i>{% trans "Game Rules & Conditions" %}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="rules-modal-body">
+                    <div class="text-center my-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{% trans "Decline" %}</button>
+                    <button type="button" class="btn btn-success" id="accept-rules-btn" onclick="submitNewGame()">{% trans "Accept & Start" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="game-view" class="mt-4" style="display:none;">
         <div class="card border-dark">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
@@ -86,6 +108,50 @@
 
 <script>
 let isAnimationPlaying = false;
+let rulesModalInstance = null;
+function showGameRules() {
+    const gameName = document.getElementById('game-name-select').value;
+    const gameLevel = document.getElementById('level-select').value;
+    const modalBody = document.getElementById('rules-modal-body');
+
+    // 1. Initialize and show the modal with a loading spinner right away
+    if (!rulesModalInstance) {
+        rulesModalInstance = new bootstrap.Modal(document.getElementById('rulesModal'));
+    }
+
+    modalBody.innerHTML = `
+        <div class="text-center my-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">{% trans "Fetching game rules..." %}</p>
+        </div>
+    `;
+    rulesModalInstance.show();
+
+    // 2. Fetch the rules from your server route
+    // Note: using your route format /doc/${game_name}_${game_level}
+    fetch(`/doc/${gameName}_${gameLevel}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            // Use .text() if your server returns HTML/Markdown text,
+            // or .json() if it returns JSON object structure
+            return response.text();
+        })
+        .then(data => {
+            // 3. Inject the retrieved rules into the modal
+            modalBody.innerHTML = data;
+        })
+        .catch(error => {
+            console.error('Error fetching rules:', error);
+            modalBody.innerHTML = `
+                <div class="alert alert-danger role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    {% trans "Failed to load game rules. Please try again." %}
+                </div>
+            `;
+        });
+}
 function toggleSetup() {
     const setupDiv = document.getElementById('game-setup');
     setupDiv.style.display = (setupDiv.style.display === 'none') ? 'block' : 'none';
@@ -262,7 +328,6 @@ async function loadBoard(gameId) {
         console.error("Failed to load layout updates:", err);
     }
 }
-
 function renderPlayerNames(data) {
     const area = document.getElementById('toss-result');
     if (!data.Toss || data.Toss.length === 0) return;
@@ -270,21 +335,26 @@ function renderPlayerNames(data) {
     const sortedPlayers = [...data.Toss].sort((a, b) => a.Side - b.Side);
     const currentTurn = data.Board ? data.Board.Turn : 0;
 
-    area.innerHTML = sortedPlayers.map(p => {
-        const isActive = (p.Side === currentTurn);
-        const activeClass = isActive ? 'border-primary bg-primary text-white shadow' : 'bg-light text-muted';
-        const activeLabel = isActive ? '<span class="badge bg-warning text-dark ms-2">THINKING...</span>' : '';
+    // Wrap everything in a single flex row for a compact, one-line layout
+    area.innerHTML = `
+        <div class="d-flex align-items-center gap-3 small">
+            ${sortedPlayers.map(p => {
+                const isActive = (p.Side === currentTurn);
 
-        return `
-            <div class="p-3 border rounded-3 text-center transition-all ${activeClass}" style="min-width: 150px;">
-                <div class="small fw-bold">SIDE ${p.Side}</div>
-                <div class="fs-5 text-truncate" style="max-width: 180px;">${p.Player}</div>
-                ${activeLabel}
-            </div>
-        `;
-    }).join('');
+                // Active player gets bold/colored text; inactive gets muted/gray text
+                const textClass = isActive ? 'fw-bold text-dark' : 'text-muted opacity-75';
+                const indicator = isActive ? '<span class="spinner-grow spinner-grow-sm text-warning me-1" role="status"></span><span class="badge bg-primary">Turn</span>' : '';
+
+                return `
+                    <div class="d-flex align-items-center ${textClass}">
+                        ${indicator}
+                        <span class="ms-1">${p.Player} (S${p.Side})</span>
+                    </div>
+                `;
+            }).join('<span class="text-muted">vs</span>')}
+        </div>
+    `;
 }
-
 function updateTurnDisplay(turn) {
     const gameId = document.getElementById('display-game-id').innerText;
     loadBoard(gameId);
@@ -453,7 +523,7 @@ function renderStore(data) {
     // Added 'pit-transition' and 'data-side' to the row
     return `
       <tr data-side="${side}" class="pit-transition">
-        <th scope="row">{% trans "Side" %} ${side} {% trans "Store" %}</th>
+        <th scope="row">{% trans "Store" %}</th>
         <td class="fw-bold text-center value-cell">${value}</td>
       </tr>
     `;
@@ -619,7 +689,10 @@ async function submitNewGame() {
     try {
         const gameName = document.getElementById('game-name-select').value;
         const gameLevel = document.getElementById('level-select').value;
-
+        // 1. Hide the rules modal safely
+            if (rulesModalInstance) {
+                rulesModalInstance.hide();
+            }
         const response = await fetch('{% url "api_new_game" %}', {
             method: 'POST',
             headers: {
