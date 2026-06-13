@@ -25,7 +25,7 @@ class core(base.base_utils):
         self.kai = None
         self.captured_sucess = False
 
-        self.nRound = 0
+        self.nRound = 1
         self.prechecks = [
             self.is_game_active,
             self.is_valid_req,
@@ -154,7 +154,7 @@ class core(base.base_utils):
         index = self.req.Move["Index"]
         self.captured_sucess = False
         self.detail = []
-        self.nRound = 1
+
         for pit in self.game.Board.Pits:
             if pit.Active and pit.Index == index:
                 self.kai = copy.deepcopy(pit)
@@ -201,8 +201,9 @@ class core(base.base_utils):
 
     def do_roundsup(self):
         logger.debug("enter")
-        self.detail.append({"RoundUp": True})
         self.nRound += 1
+        self.detail.append({"RoundUp": True, "Nrounds": self.nRound})
+
         for cond in self.roundsup:
             if callable(cond):
                 cond()

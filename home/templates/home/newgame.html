@@ -81,7 +81,7 @@
         <div class="card border-dark">
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                 <span>Game ID: <small id="display-game-id"></small></span>
-                <span id="turn-indicator" class="badge bg-light text-dark"></span>
+                <span id="rounds-indicator" class="badge bg-light text-dark"></span>
                 <span>
                     <button id="resign-move-btn" class="btn btn-warning mt-3" style="display:none;" onclick="triggerResign()">
                         {% trans "Resign" %}
@@ -407,6 +407,19 @@ function disableAllInputs(disable) {
     const resignBtn = document.getElementById('resign-move-btn');
     if (resignBtn) resignBtn.disabled = disable;
 }
+function updateNrounds(displayValue){
+  const textClass = "text-dark"; // Your custom text class variable
+  const container = document.getElementById('rounds-indicator');
+  if (!container) return;
+  container.innerHTML = `
+      <div class="d-flex align-items-center ${textClass}">
+          <div class="spinner-border text-warning spinner-border-sm me-2" role="status">
+              <span class="visually-hidden">Loading...</span>
+          </div>
+          <span class="fw-bold fs-5">${displayValue}</span>
+      </div>
+  `;
+}
 async function animateMoveDetails(detail) {
     if (!detail || detail.length === 0) return;
     isAnimationPlaying = true;
@@ -416,6 +429,9 @@ async function animateMoveDetails(detail) {
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     for (const step of detail) {
+      if ("RoundUp" in step){
+        updateNrounds(step.Nrounds)
+      }
       if ("Store" in step) {
         updateAndGlowStore(step.Store)
       }

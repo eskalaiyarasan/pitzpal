@@ -25,14 +25,15 @@
             }
           }
         },
-        "RoundUp": { "type": "boolean" }
+        "RoundUp": { "type": "boolean" },
+        "Nrounds": { "type": "integer", "default": 1 }
       },
       "additionalProperties": false,
       "anyOf": [
         { "required": ["Index", "Value"] },
         { "required": ["Store"] },
         { "required": ["Index", "Share"] },
-        { "required": ["RoundUp"] }
+        { "required": ["RoundUp", "Nrounds"] }
       ]
     }
   }
