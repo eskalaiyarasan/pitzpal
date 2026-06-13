@@ -236,7 +236,7 @@ class core(base.base_utils):
         logger.debug("exit True")
         return True
 
-    def check_roundsup(self, endd=False):
+    def check_roundsup(self):
         logger.debug("enter")
         side = self.game.Board.Turn
         # npits = self.game.Config.PitsPerSide
@@ -252,19 +252,35 @@ class core(base.base_utils):
             else:
                 print("do_roundsup:", pit.Public, pit.Active, pit.Side, pit.Value)
 
-        if endd:
-            logger.debug(f"exit [{nactive} == 0]")
-            return nactive == 0
-        elif nactive == 0:
+        if nactive == 0:
             rett = self.do_roundsup()
             logger.debug(f"exit : {rett}")
             return rett
         logger.debug("exit True")
         return True
 
+    def is_gameover(self):
+        logger.debug("enter")
+        for side in range(self.game.Config.Nside):
+            nactive = 0
+            for pit in self.game.Board.Pits:
+                if (
+                    (not pit.Public)
+                    and pit.Active
+                    and (side == pit.Side)
+                    and (pit.Value > 0)
+                ):
+                    nactive += 1
+            if nactive == 0:
+                logger.debug("exit True")
+                return True
+        logger.debug("exit False")
+        return False
+
     def check_gameend(self):
         logger.debug("enter")
-        if self.check_roundsup(True):
+        if self.is_gameover():
+            self.checkout_allpits()
             self.game.Status = "done"
         logger.debug("exit True")
         return True

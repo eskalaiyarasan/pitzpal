@@ -544,9 +544,13 @@ function renderBoard(data, myside) {
 function createPitElement(pit, gameId, currentTurn, myside) {
   const btn = document.createElement('button');
   const colors = ['btn-outline-primary', 'btn-outline-danger', 'btn-outline-success', 'btn-outline-warning'];
-  const colorClass = colors[pit.Side] || 'btn-outline-secondary';
+  colorClass = colors[pit.Side] || 'btn-outline-secondary';
+  btn.className = `btn ${colorClass} rounded-circle d-flex flex-column align-items-center justify-content-center shadow-sm`;
+	if (pit.Public === true){
+           btn.className = `btn bg-dark text-white rounded-circle d-flex flex-column align-items-center justify-content-center shadow-sm`;
+	}
 
-    btn.className = `btn ${colorClass} rounded-circle d-flex flex-column align-items-center justify-content-center shadow-sm`;
+
     btn.style.width = "65px";
     btn.style.height = "65px";
     btn.setAttribute('data-pit-index', pit.Index);
@@ -560,7 +564,7 @@ function createPitElement(pit, gameId, currentTurn, myside) {
         btn.disabled = true;
         return btn; // Return early since no further rendering or logic is needed
     }
-    if (currentTurn === myside && Number(pit.Side) === myside && pit.Value > 0) {
+    if (currentTurn === myside && Number(pit.Side) === myside && pit.Value > 0 && pit.Public === false) {
         btn.onclick = () => submitMove(gameId, pit.Index);
     } else {
         btn.disabled = true;

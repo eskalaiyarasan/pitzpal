@@ -176,12 +176,12 @@ LOGGING = {
         # This catches logs from your custom app code
         "django": {
             "handlers": ["console", "file"],
-            "level": "ERROR",
+            "level": "DEBUG",
             "propagate": True,
         },
         "pitzpalgame": {  # Use the exact folder name of your Django sub-app
             "handlers": ["console", "file"],  # Tell it which handler to use
-            "level": "ERROR",  # Set to DEBUG so you catch absolutely everything
+            "level": "DEBUG",  # Set to DEBUG so you catch absolutely everything
             "propagate": True,
         },
         "vsComputer": {  # Use the exact folder name of your Django sub-app

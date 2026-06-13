@@ -31,11 +31,12 @@ def createreq(y):
     pits = range(npits * turn, npits * (turn + 1))
     while choice:
         inp = random.choice(pits)
-        if (y["Board"]["Pits"][inp]["Active"]) and (
-            y["Board"]["Pits"][inp]["Value"] > 0
-        ):
+        print("createreq", inp)
+        x = y["Board"]["Pits"][inp]
+        if (x["Active"] is True) and (x["Value"] > 0) and (x["Public"] is False):
             ret["Move"]["Index"] = inp
             choice = False
+            print("createreq", inp, "------- done")
     return ret
 
 

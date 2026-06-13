@@ -2,8 +2,8 @@
 Tasks:
     1. 1. # details for a move to be added. for better clarity.
        2. settings menu to be added, game preferance show details of a move or not needed.
-       3. there is issue early cultivation is happening in kingz pits
-       4. capture pit immediate after the kingz pit is failing
+       3. # there is issue early cultivation is happening in kingz pits
+       4. # capture pit immediate after the kingz pit is failing
 
     2. rules documents to be added. it has show on creating the new game
     3. remove the pod, instead of pod, fast is going to be used

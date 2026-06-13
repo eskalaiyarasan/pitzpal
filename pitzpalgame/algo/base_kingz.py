@@ -48,9 +48,13 @@ class kingz(core.early):
         logger.debug("enter")
         for index in self.game.Config.Kingzpits["Value"]:
             total_share = 0
+            print("share2store/index", index)
             for share in self.game.Board.Pits[index].Share:
                 for side in share:
                     total_share += share[side]
+                    print("share2store/index/", side, type(side))
+            print(f"share2store/{index}/total = {total_share}")
+
             if total_share == 0:
                 continue
             total_value = self.game.Board.Pits[index].Value
@@ -59,8 +63,8 @@ class kingz(core.early):
                 for side in share:
                     seeds = (total_value * share[side]) // total_share
                     # print("share2store: save_to_store", index, side, seeds)
-                    self.save_to_store(side, seeds)
+                    self.save_to_store(int(side), seeds)
                     rem_seeds -= seeds
-                    break
+                    share[side] = 0
             self.set_pit_value(index, rem_seeds)
         return True
