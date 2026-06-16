@@ -7,7 +7,9 @@ from . import pit, utils
 class Board(utils.Base):
     def __init__(self) -> None:
         # Pass the specific starting data to the base constructor
-        super().__init__("board.schema.json", "Board", {"Pits": [], "Turn": 0})
+        super().__init__(
+            "board.schema.json", "Board", {"Nrounds": 1, "Pits": [], "Turn": 0}
+        )
 
     @classmethod
     def from_json(cls, data: dict, validate_schema: bool = True) -> "board":
@@ -22,7 +24,7 @@ class Board(utils.Base):
         for pitx in data["Pits"]:
             pitz = pit.pit.from_json(pitx)
             pits_list.append(pitz)
-        params = ["Turn", "Store", "TotalSeeds"]
+        params = ["Turn", "Store", "TotalSeeds", "Nrounds"]
         instance._storage["Pits"] = pits_list
         for param in params:
             instance._storage[param] = copy.deepcopy(data[param])
@@ -64,5 +66,11 @@ def createBoard(data: dict):
                     total += data["Nseeds"]
 
                 pits.append(xnew)
-            ret = {"Pits": pits, "Turn": 0, "TotalSeeds": total, "Store": store}
+            ret = {
+                "Pits": pits,
+                "Turn": 0,
+                "TotalSeeds": total,
+                "Nrounds": 1,
+                "Store": store,
+            }
     return ret

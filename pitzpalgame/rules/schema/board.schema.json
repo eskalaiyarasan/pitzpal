@@ -16,6 +16,7 @@
         },
         "TotalSeeds": { "type": "integer", "minimum": 0 },
         "Turn": { "type": "integer", "default": 0 },
+        "Nrounds": { "type": "integer", "default": 1 },
         "Store": {
           "type": "array",
           "items": {
