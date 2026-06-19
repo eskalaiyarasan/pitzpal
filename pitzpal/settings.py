@@ -28,8 +28,13 @@ SECRET_KEY = "django-insecure-5--jry2nvmuf8ev&2!2jsio15f41g+d_@ceyp(if##!51aqcrs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = [
+    "*",
+    "localhost",
+    "127.0.0.1",
+    "[::1]",  # IPv6 Loopback
+    "[::]",  # IPv6 Wildcard bind]
+]
 
 # Application definition
 
@@ -113,6 +118,8 @@ AUTH_PASSWORD_VALIDATORS = [
 CSRF_TRUSTED_ORIGINS = [
     "https://*.pinggy.linky",
     "https://*.free.pinggy.net",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
 ]
 
 # Internationalization
