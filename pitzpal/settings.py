@@ -28,7 +28,7 @@ SECRET_KEY = "django-insecure-5--jry2nvmuf8ev&2!2jsio15f41g+d_@ceyp(if##!51aqcrs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -110,6 +110,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://*.pinggy.linky",
+#     "https://*.free.pinggy.net",
+# ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/

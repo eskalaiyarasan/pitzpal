@@ -42,7 +42,9 @@ class early(core.core):
 
     def progress_check_plus(self):
         logger.debug("enter")
-        if self.get_pit_value(self.prev) == self.game.Config.Early["Value"]:
+        if (self.get_pit_value(self.kai.Index) > 0) and (
+            self.get_pit_value(self.prev) == self.game.Config.Early["Value"]
+        ):
             self.move_to_store(self.prev, self.game.Board.Turn)
         logger.debug("exit True")
         return True

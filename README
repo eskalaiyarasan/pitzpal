@@ -6,11 +6,11 @@ Tasks:
        4. # capture pit immediate after the kingz pit is failing
 
     2. # rules documents to be added. it has show on creating the new game
-        Fix issues in rules : move, rounds up and game over
-    3. 1. #remove the pod
-    4. update the report win/loss who is the winner. ist place,second place ...
+        # Fix issues in rules : move, rounds up and game over
+    3. # remove the pod
+    4. update the report win/loss who is the winner. 1st place,second place ...
     5. # Spinner for roundsup and number of rounds to show
-
+    6. # Issue in Accumulation rule. Double capture is occuring even there is no seeds in main capture.
 ===============================================
 Future:
     1.  Hard is nothing but same as medium but show only empty pits. pit having values are closed.
