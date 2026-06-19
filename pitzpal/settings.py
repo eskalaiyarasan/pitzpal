@@ -110,10 +110,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# CSRF_TRUSTED_ORIGINS = [
-#     "https://*.pinggy.linky",
-#     "https://*.free.pinggy.net",
-# ]
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.pinggy.linky",
+    "https://*.free.pinggy.net",
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
