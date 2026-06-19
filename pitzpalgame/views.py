@@ -22,9 +22,14 @@ def about_game(request, name, level):
             rules = rules + "<p>" + str(sno) + " " + rule + "</p>\n"
             sno = sno + 1
     html_rules = "".join(rule for rule in rules)
+    name1 = str(name)
+    name1 = name1.replace("one", "Standard")
+    name1 = name1.replace("kingz", "Premium")
+    print("name=", name)
+    print("name1=", name1)
     content = {
-        "page_title": f"About game {name}",
-        "welcome_message": f"Welcome to game : {name} - {level} ",
+        "page_title": f"About game {name1}",
+        "welcome_message": f"Welcome to game : {name1} - {level} ",
         "rules_data": Markup(html_rules),
     }
 
