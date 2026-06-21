@@ -539,7 +539,7 @@ function renderStore(data) {
     // Added 'pit-transition' and 'data-side' to the row
     return `
       <tr data-side="${side}" class="pit-transition">
-        <th scope="row">{% trans "Store" %}</th>
+        <th scope="row">${side}</th>
         <td class="fw-bold text-center value-cell">${value}</td>
       </tr>
     `;
