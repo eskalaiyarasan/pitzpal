@@ -16,13 +16,9 @@ Future:
     1.  Hard is nothing but same as medium but show only empty pits. pit having values are closed.
     2.  matchmaking, queue and real-time 2 player game.
     3. Translate for tamil
-    4. fast is going to be used
-        fast : improvement in gameend scenario, instead of losing all the pits.
-                game end if any player has only one pit at a time. This is to avoid cyclic
-                behavior of the game.
-        options are
-            1. classic fast
-            2. classic kingz pit
-            3. classic kingz pit fast
-            4. classic relay
-            5. classic kingz pit relay
+    4.  options are
+            1. classic simple   :- philippines game
+            2. classic spring   :- malaysian game
+            3. classic perfect  :- Srilankan game
+            4. classic standard :- Pallanguzhi
+            5. classic premium  :- kingz pit
