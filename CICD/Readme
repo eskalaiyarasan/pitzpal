@@ -1,0 +1,8 @@
+#build the podman
+podman build --ssh default -t pitzpal_cdn .
+
+# run command :
+podman run -it --rm --name pitzpal_cdn pitzpal_cdn
+
+#Excute the shell of it
+podman exec -it pitzpal_cdn sh
