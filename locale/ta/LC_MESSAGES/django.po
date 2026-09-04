@@ -1,4 +1,4 @@
-# Tamil translation for Pitzpal Game.
+# Tamil translation for Zerasix Game.
 # Copyright (C) 2026
 #
 msgid ""
@@ -16,7 +16,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: crm/templates/registration/login.html:4
-msgid "Pitzpal Login"
+msgid "Zerasix Login"
 msgstr "பல்லாங்குழி உள்நுழைவு"
 
 #: crm/templates/registration/login.html:8
@@ -47,7 +47,7 @@ msgid "About-us"
 msgstr "எங்களைப்பற்றி"
 
 #: crm/templates/registration/signup.html:14
-msgid "Create Pitzpal Account"
+msgid "Create Zerasix Account"
 msgstr "பல்லாங்குழி கணக்கை உருவாக்கவும்"
 
 #: crm/templates/registration/signup.html:31
@@ -112,8 +112,8 @@ msgid "Welcome to the Aboutpage!"
 msgstr "எங்களைப்பற்றிய பக்கத்திற்கு உங்களை வரவேற்கிறோம்!"
 
 #: home/templates/common/about.html:6
-msgid "Pitzpal Game"
-msgstr "பிட்ஸ்பால் விளையாட்டு"
+msgid "Zerasix Game"
+msgstr "ஜெராசிக்ஸ் விளையாட்டு"
 
 #: home/templates/common/about.html:7
 msgid "contact @"
@@ -128,8 +128,8 @@ msgid "phone:"
 msgstr "தொலைபேசி:"
 
 #: home/templates/common/about.html:10 home/templates/common/base.html:20
-msgid "Pitzpal"
-msgstr "பிட்ஸ்பால்"
+msgid "Zerasix"
+msgstr "ஜெராசிக்ஸ் ்"
 
 #: home/templates/common/base.html:32
 msgid "Friends"
