@@ -58,7 +58,6 @@
         const playSound = (type) => {
             try {
                 if (type === 'drop') {
-                    // Water drop sound set to 0.05 seconds with a crisp pitch drop
                     playSynthTone(1200, 'sine', 0.05, 500);
                 } else if (type === 'moveToStore') {
                     playSynthTone(440, 'sine', 0.08);
@@ -177,7 +176,6 @@
                 if ("RoundUp" in step) {
                     setCurrentRound(step.Nrounds);
                 }
-                // If the step updates a pit's value, update boardData state live
                 if ("Index" in step && "Value" in step) {
                     setBoardData(prevData => {
                         if (!prevData || !prevData.Board || !prevData.Board.Pits) return prevData;
@@ -199,45 +197,45 @@
                 if ("Store" in step) {
                     playSound('moveToStore');
                     setBoardData(prevData => {
-                                            if (!prevData || !prevData.Board || !prevData.Board.Store) return prevData;
+                        if (!prevData || !prevData.Board || !prevData.Board.Store) return prevData;
 
-                                            const storeEntries = Object.entries(step.Store);
-                                            if (storeEntries.length === 0) return prevData;
-                                            const [targetSide, targetVal] = storeEntries[0];
+                        const storeEntries = Object.entries(step.Store);
+                        if (storeEntries.length === 0) return prevData;
+                        const [targetSide, targetVal] = storeEntries[0];
 
-                                            const updatedStore = prevData.Board.Store.map(st => {
-                                                const [[side, val]] = Object.entries(st);
-                                                if (side === targetSide) {
-                                                    return { [side]: targetVal };
-                                                }
-                                                return st;
-                                            });
+                        const updatedStore = prevData.Board.Store.map(st => {
+                            const [[side, val]] = Object.entries(st);
+                            if (side === targetSide) {
+                                return { [side]: targetVal };
+                            }
+                            return st;
+                        });
 
-                                            return {
-                                                ...prevData,
-                                                Board: {
-                                                    ...prevData.Board,
-                                                    Store: updatedStore
-                                                }
-                                            };
-                                        });
-                                        await new Promise(r => setTimeout(r, 150));
+                        return {
+                            ...prevData,
+                            Board: {
+                                ...prevData.Board,
+                                Store: updatedStore
+                            }
+                        };
+                    });
+                    await new Promise(r => setTimeout(r, 150));
                 } else if ("Pasu" in step) {
                     playSound('pasu');
-                    setFloatingAlert(`🍯 Pasu Collected: ${step.PasuCount || ''}`);
+                    setFloatingAlert(`Pasu Collected: ${step.PasuCount || ''}`);
                     await new Promise(r => setTimeout(r, 600));
                     setFloatingAlert(null);
                 } else if ("Index" in step) {
                     setAnimatedPit(step.Index);
                     playSound('drop');
-                    await new Promise(r => setTimeout(r, 200)); // slightly extended delay to cleanly hear each drop
+                    await new Promise(r => setTimeout(r, 200));
                     setAnimatedPit(null);
                 }
 
                 if ("Capture" in step) {
                     const seedCount = step.CaptureCount || 0;
                     const isDouble = step.IsDoubleCapture || false;
-                    setFloatingAlert(isDouble ? `🐝 Double Capture! (${seedCount} seeds)` : `🐝 Captured ${seedCount} seeds!`);
+                    setFloatingAlert(isDouble ? `Double Capture! (${seedCount} seeds)` : `Captured ${seedCount} seeds!`);
                     playSound(isDouble ? 'doubleCapture' : 'capture');
                     await new Promise(r => setTimeout(r, 800));
                     setFloatingAlert(null);
@@ -315,7 +313,7 @@
 
         return (
             <div className="container py-4" style={ { backgroundColor: '#fffdf4', minHeight: '80vh', borderRadius: '12px' } }>
-                <h2 className="text-center fw-bold mb-4" style={ { color: '#d97706' } }>🍯 Honeycomb Pitzpal Arena</h2>
+                <h2 className="text-center fw-bold mb-4" style={ { color: '#d97706' } }>Honeycomb Pitzpal Arena</h2>
 
                 {/* Floating Notification Alerts */}
                 {floatingAlert && (
@@ -384,7 +382,7 @@
                                 </div>
                             ) : boardData.Status === "done" ? (
                                 <div className="text-center p-4">
-                                    <h2 className="display-6 fw-bold text-success mb-3">🎉 Game Concluded!</h2>
+                                    <h2 className="display-6 fw-bold text-success mb-3">Game Concluded!</h2>
                                     <button className="btn btn-primary btn-lg" onClick={() => window.location.reload()}>
                                         Return to Lobby
                                     </button>
@@ -433,6 +431,11 @@
                                                 border: none;
                                                 position: relative;
                                                 overflow: hidden;
+                                            }
+                                            .honeycomb-pit.silver-pit {
+                                                background-color: #fee08a !important;
+                                                border: 3px solid #94a3b8 !important;
+                                                filter: drop-shadow(0 0 4px rgba(148, 163, 184, 0.9));
                                             }
                                             .honeycomb-pit:hover:not(:disabled) {
                                                 background-color: #fde047;
@@ -509,10 +512,10 @@
                                                         >
                                                             <div className="d-flex justify-content-between align-items-center px-3 mb-1">
                                                                 <span className="fw-bold small" style={ { color: '#78350f' } }>
-                                                                    👤 Owner: {ownerName} {ownerName === currentUsername ? '(You)' : ''}
+                                                                    Owner: {ownerName} {ownerName === currentUsername ? '(You)' : ''}
                                                                 </span>
                                                                 <span className={`badge ${isThisSideActive ? 'bg-warning text-dark' : 'bg-secondary'}`}>
-                                                                    {isThisSideActive ? '⚡ Active Turn' : 'Waiting'}
+                                                                    {isThisSideActive ? 'Active Turn' : 'Waiting'}
                                                                 </span>
                                                             </div>
 
@@ -531,7 +534,7 @@
                                                                     return (
                                                                         <button
                                                                             key={pit.Index}
-                                                                            className={`honeycomb-pit ${animatedPit === pit.Index ? 'animated-glow' : ''}`}
+                                                                            className={`honeycomb-pit ${pit.Public ? 'silver-pit' : ''} ${animatedPit === pit.Index ? 'animated-glow' : ''}`}
                                                                             disabled={!isMyTurn}
                                                                             onClick={() => submitMove(pit.Index)}
                                                                         >
