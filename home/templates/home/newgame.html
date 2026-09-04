@@ -15,22 +15,25 @@
 <script>
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-    function playSynthTone(frequency, type, duration) {
+    function playSynthTone(frequency, type, duration, pitchEnd = null) {
         if (audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        
+
         osc.type = type;
         osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
-        
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        if (pitchEnd !== null) {
+            osc.frequency.exponentialRampToValueAtTime(pitchEnd, audioCtx.currentTime + duration);
+        }
+
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        
+
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        
+
         osc.start();
         osc.stop(audioCtx.currentTime + duration);
     }
@@ -54,7 +57,10 @@
 
         const playSound = (type) => {
             try {
-                if (type === 'moveToStore') {
+                if (type === 'drop') {
+                    // Water drop sound set to 0.05 seconds with a crisp pitch drop
+                    playSynthTone(1200, 'sine', 0.05, 500);
+                } else if (type === 'moveToStore') {
                     playSynthTone(440, 'sine', 0.08);
                 } else if (type === 'pasu') {
                     playSynthTone(300, 'triangle', 0.12);
@@ -171,9 +177,51 @@
                 if ("RoundUp" in step) {
                     setCurrentRound(step.Nrounds);
                 }
+                // If the step updates a pit's value, update boardData state live
+                if ("Index" in step && "Value" in step) {
+                    setBoardData(prevData => {
+                        if (!prevData || !prevData.Board || !prevData.Board.Pits) return prevData;
+                            const updatedPits = prevData.Board.Pits.map(pit => {
+                                if (pit.Index === step.Index) {
+                                      return { ...pit, Value: step.Value };
+                                }
+                                return pit;
+                            });
+                        return {
+                            ...prevData,
+                            Board: {
+                                ...prevData.Board,
+                                Pits: updatedPits
+                            }
+                        };
+                    });
+                }
                 if ("Store" in step) {
                     playSound('moveToStore');
-                    await new Promise(r => setTimeout(r, 150));
+                    setBoardData(prevData => {
+                                            if (!prevData || !prevData.Board || !prevData.Board.Store) return prevData;
+
+                                            const storeEntries = Object.entries(step.Store);
+                                            if (storeEntries.length === 0) return prevData;
+                                            const [targetSide, targetVal] = storeEntries[0];
+
+                                            const updatedStore = prevData.Board.Store.map(st => {
+                                                const [[side, val]] = Object.entries(st);
+                                                if (side === targetSide) {
+                                                    return { [side]: targetVal };
+                                                }
+                                                return st;
+                                            });
+
+                                            return {
+                                                ...prevData,
+                                                Board: {
+                                                    ...prevData.Board,
+                                                    Store: updatedStore
+                                                }
+                                            };
+                                        });
+                                        await new Promise(r => setTimeout(r, 150));
                 } else if ("Pasu" in step) {
                     playSound('pasu');
                     setFloatingAlert(`🍯 Pasu Collected: ${step.PasuCount || ''}`);
@@ -181,10 +229,11 @@
                     setFloatingAlert(null);
                 } else if ("Index" in step) {
                     setAnimatedPit(step.Index);
-                    await new Promise(r => setTimeout(r, 120));
+                    playSound('drop');
+                    await new Promise(r => setTimeout(r, 200)); // slightly extended delay to cleanly hear each drop
                     setAnimatedPit(null);
                 }
-                
+
                 if ("Capture" in step) {
                     const seedCount = step.CaptureCount || 0;
                     const isDouble = step.IsDoubleCapture || false;
@@ -448,15 +497,14 @@
                                                 return Object.entries(pitsMap).map(([sideId, pits]) => {
                                                     const sideNumber = Number(sideId);
                                                     const sortedPits = sideNumber % 2 !== 0 ? [...pits].reverse() : pits;
-                                                    
-                                                    // Map side ownership to player names from Toss info if available
+
                                                     const tossEntry = boardData.Toss ? boardData.Toss.find(p => p.Side === sideNumber) : null;
                                                     const ownerName = tossEntry ? tossEntry.Player : `Side ${sideNumber}`;
                                                     const isThisSideActive = (currentTurn === sideNumber);
 
                                                     return (
-                                                        <div 
-                                                            key={sideId} 
+                                                        <div
+                                                            key={sideId}
                                                             className={`side-banner p-2 my-3 ${isThisSideActive ? 'active-turn' : 'bg-light'}`}
                                                         >
                                                             <div className="d-flex justify-content-between align-items-center px-3 mb-1">
@@ -477,7 +525,7 @@
                                                                     const myData = boardData.Toss ? boardData.Toss.find(p => p.Player === currentUsername) : null;
                                                                     const myside = myData ? myData.Side : null;
                                                                     const isMyTurn = (currentTurn === myside && sideNumber === myside && pit.Value > 0 && !pit.Public && !isAnimating);
-                                                                    
+
                                                                     const fillHeightPercent = Math.min(Math.max(pit.Value * 5, pit.Value > 0 ? 12 : 0), 100);
 
                                                                     return (
