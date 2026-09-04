@@ -29,7 +29,6 @@ SECRET_KEY = "django-insecure-5--jry2nvmuf8ev&2!2jsio15f41g+d_@ceyp(if##!51aqcrs
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "qmkgfnruij.a.pinggy.link",
     "localhost",
     "127.0.0.1",
     "[::1]",  # IPv6 Loopback
