@@ -44,7 +44,9 @@
     function PitzpalApp() {
         const [view, setView] = React.useState('lobby'); // 'lobby', 'rules', 'game'
         const [gameSetup, setGameSetup] = React.useState({ name: 'classic_one', level: 'easy' });
-        const [rulesContent, setRulesContent] = React.useState('');
+        const [ruleStep, setRuleStep] = React.useState(1);
+        const maxRules = 21;
+
         const [gameId, setGameId] = React.useState(null);
         const [boardData, setBoardData] = React.useState(null);
         const [moves, setMoves] = React.useState([]);
@@ -79,13 +81,7 @@
 
         const handleOpenRules = async () => {
             setView('rules');
-            try {
-                const res = await fetch(`/doc/${gameSetup.name}_${gameSetup.level}`);
-                const text = await res.text();
-                setRulesContent(text);
-            } catch (err) {
-                setRulesContent('<p class="text-danger">Failed to load rules.</p>');
-            }
+            setRuleStep(1);
         };
 
         const submitNewGame = async () => {
@@ -179,12 +175,12 @@
                 if ("Index" in step && "Value" in step) {
                     setBoardData(prevData => {
                         if (!prevData || !prevData.Board || !prevData.Board.Pits) return prevData;
-                            const updatedPits = prevData.Board.Pits.map(pit => {
-                                if (pit.Index === step.Index) {
-                                      return { ...pit, Value: step.Value };
-                                }
-                                return pit;
-                            });
+                        const updatedPits = prevData.Board.Pits.map(pit => {
+                            if (pit.Index === step.Index) {
+                                return { ...pit, Value: step.Value };
+                            }
+                            return pit;
+                        });
                         return {
                             ...prevData,
                             Board: {
@@ -347,14 +343,458 @@
                     </div>
                 )}
 
-                {/* Rules Modal View */}
+                {/* Rules Walkthrough View with Hexagonal Rule Pits */}
                 {view === 'rules' && (
-                    <div className="card shadow p-4 mx-auto" style={ { maxWidth: '800px' } }>
-                        <h5>Game Rules & Conditions</h5>
-                        <div className="my-3 p-3 border rounded bg-light" dangerouslySetInnerHTML={ { __html: rulesContent } } />
-                        <div className="text-end">
-                            <button className="btn btn-secondary me-2" onClick={() => setView('lobby')}>Decline</button>
-                            <button className="btn btn-success" onClick={submitNewGame}>Accept & Start</button>
+                    <div className="card shadow p-4 mx-auto text-center" style={ { maxWidth: '680px', borderRadius: '15px' } }>
+                        <style>{`
+                            .rule-honeycomb-pit {
+                                width: 72px;
+                                height: 83px;
+                                background-color: #fef08a;
+                                margin: 6px;
+                                display: inline-flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+                                position: relative;
+                                border: none;
+                            }
+                            .rule-honeycomb-pit.silver-pit {
+                                background-color: #fef08a !important;
+                                border: 3px solid #94a3b8 !important;
+                                filter: drop-shadow(0 0 4px rgba(148, 163, 184, 0.9));
+                            }
+                            .rule-honeycomb-pit.crossed-pit::after {
+                                content: "❌";
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                                font-size: 1.2rem;
+                                z-index: 3;
+                            }
+                        `}</style>
+
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                            <h4 className="fw-bold m-0" style={ { color: '#d97706', fontSize: '1.1rem' } }>Game: {gameSetup.name} - {gameSetup.level}</h4>
+                            <button className="btn btn-outline-secondary btn-sm" onClick={submitNewGame}>Skip Rules</button>
+                        </div>
+
+                        {/* Visual Step Container */}
+                        <div className="my-3 p-4 border rounded bg-white shadow-sm d-flex flex-column align-items-center justify-content-center" style={ { minHeight: '240px' } }>
+
+                            {/* Rule 1 */}
+                            {ruleStep === 1 && (
+                                <div>
+                                    <div className="d-flex justify-content-center gap-4 mb-3">
+                                        <div className="p-3 bg-warning text-dark rounded-circle fw-bold shadow-sm" style={ { width: '60px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center' } }>P1</div>
+                                        <div className="p-3 bg-danger text-white rounded-circle fw-bold shadow-sm" style={ { width: '60px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center' } }>P2</div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark mt-2">Rule 1: This is a 2-player game.</h5>
+                                    <p className="text-muted small">Face off against your opponent in a tactical battle of wits.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 2 */}
+                            {ruleStep === 2 && (
+                                <div className="w-100">
+                                    <div className="d-flex justify-content-around bg-light p-2 rounded mb-3 border">
+                                        <div className="text-primary fw-bold">Side 0</div>
+                                        <div className="text-danger fw-bold">Side 1</div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 2: The board consists of 2 rows/sides.</h5>
+                                    <p className="text-muted small">Side 0 and Side 1 are clearly mapped across the playing board.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 3 */}
+                            {ruleStep === 3 && (
+                                <div>
+                                    <div className="fs-1 mb-2">🪙</div>
+                                    <h5 className="fw-bold text-dark">Rule 3: Coin Toss Determination</h5>
+                                    <p className="text-muted small">A coin toss is used to determine who chooses their side.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 4 */}
+                            {ruleStep === 4 && (
+                                <div>
+                                    <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
+                                        <span className="badge bg-success">Toss Winner</span>
+                                        <span>➔</span>
+                                        <span className="badge bg-primary">Gets Side 0 & Opens Play</span>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 4: Opening Move</h5>
+                                    <p className="text-muted small">The player winning the toss gets Side 0 and starts the play.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 5 */}
+                            {ruleStep === 5 && (
+                                <div className="w-100">
+                                    <div className="d-flex justify-content-center align-items-center gap-2 mb-2">
+                                        <div className="rule-honeycomb-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>4</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit crossed-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>0</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit silver-pit crossed-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>KingPit</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>—</span>
+                                        </div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 5: Valid Move Selection</h5>
+                                    <p className="text-muted small">Select a non-empty pit. Empty pits (0 value) and King's pits show a cross mark indicating they cannot be chosen.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 6 */}
+                            {ruleStep === 6 && (
+                                <div>
+                                    <div className="d-flex align-items-center justify-content-center gap-2 mb-2">
+                                        <div className="rule-honeycomb-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit X</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>4</span>
+                                        </div>
+                                        <span className="fs-4 fw-bold">➔</span>
+                                        <div className="rule-honeycomb-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit X</span>
+                                            <span className="fw-bold text-danger" style={ { fontSize: '0.85rem' } }>0</span>
+                                        </div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 6: Sowing Seeds</h5>
+                                    <p className="text-muted small">All seeds from the selected pit are scooped out (leaving 0) and sowed consecutively.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 7 */}
+                            {ruleStep === 7 && (
+                                <div>
+                                    <div className="d-flex justify-content-center align-items-center gap-1 mb-2">
+                                        <div className="rule-honeycomb-pit shadow-sm" style={ { border: '2px solid #d97706' } }>
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 1</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>Drop</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-light">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 2</span>
+                                            <span className="fw-bold text-danger" style={ { fontSize: '0.7rem' } }>Scoop</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 3</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>3</span>
+                                        </div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 7 & 8 (Part 1): Sowing & Scooping</h5>
+                                    <p className="text-muted small">Dropping into the first pit, while taking out values from the middle consecutive pit to continue sowing.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 8 */}
+                            {ruleStep === 8 && (
+                                <div>
+                                    <div className="d-flex justify-content-center align-items-center gap-1 mb-2">
+                                        <div className="rule-honeycomb-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 1</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>1</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-secondary text-white">
+                                            <span style={ { fontSize: '0.55rem', color: '#fff', fontWeight: 'bold' } }>Pit 2</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.7rem' } }>Empty</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm" style={ { border: '2px solid #d97706' } }>
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 3</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>Drop</span>
+                                        </div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 8 (Part 2): Continuing to Third Pit</h5>
+                                    <p className="text-muted small">Middle pit acts as empty, allowing the final drop to land in the third pit.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 9 & 10 */}
+                            {ruleStep === 9 && (
+                                <div>
+                                    <div className="d-flex justify-content-center align-items-center gap-1 mb-2">
+                                        <div className="rule-honeycomb-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 1</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>1</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-secondary text-white">
+                                            <span style={ { fontSize: '0.55rem', color: '#fff', fontWeight: 'bold' } }>Pit 2</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.7rem' } }>Empty</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-success text-white">
+                                            <span style={ { fontSize: '0.55rem', color: '#fff', fontWeight: 'bold' } }>Pit 3</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.7rem' } }>Collect</span>
+                                        </div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 9 & 10: Standard Capture</h5>
+                                    <p className="text-muted small">Drop into first pit, middle is empty, collect all from the third pit. <strong>Turn ends here.</strong></p>
+                                </div>
+                            )}
+
+                            {/* Rule 10 */}
+                            {ruleStep === 10 && (
+                                <div>
+                                    <div className="d-flex justify-content-center align-items-center gap-1 mb-2">
+                                        <div className="rule-honeycomb-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 1</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>1</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-secondary text-white">
+                                            <span style={ { fontSize: '0.55rem', color: '#fff', fontWeight: 'bold' } }>Pit 2</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.7rem' } }>Empty</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-light text-muted">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 3</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.7rem' } }>Empty</span>
+                                        </div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 11 (Step 10): Empty Target Capture</h5>
+                                    <p className="text-muted small">Drop into first pit, middle is empty, third pit is empty (taking out nothing). <strong>Turn ends here.</strong></p>
+                                </div>
+                            )}
+
+                            {/* Rule 11: Accumulation Rule */}
+                            {ruleStep === 11 && (
+                                <div>
+                                    <div className="d-flex align-items-center justify-content-center gap-1 mb-2">
+                                        <div className="rule-honeycomb-pit shadow-sm border border-warning">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 1</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>Drop</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 2</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>3</span>
+                                        </div>
+                                        <span className="fs-5 fw-bold mx-1">➔</span>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-success text-white">
+                                            <span style={ { fontSize: '0.55rem', color: '#fff', fontWeight: 'bold' } }>Pit 1</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.7rem' } }>Collect</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-warning text-dark">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 2</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.7rem' } }>Drop</span>
+                                        </div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 11: Accumulation Rule</h5>
+                                    <p className="text-muted small">Across 2 consecutive pits, drop at the first,if it has exact value == pasu value, then collect seeds from the first one by the owner of the pit and drop them at the second pit.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 12: Accumulation Bonus */}
+                            {ruleStep === 12 && (
+                                <div>
+                                    <div className="d-flex align-items-center justify-content-center gap-1 mb-2">
+                                        <div className="rule-honeycomb-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 1</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>2</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-secondary text-white">
+                                            <span style={ { fontSize: '0.55rem', color: '#fff', fontWeight: 'bold' } }>Pit 2</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.7rem' } }>0</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 3</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>4</span>
+                                        </div>
+                                        <span className="fs-5 fw-bold mx-1">➔</span>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-success text-white">
+                                            <span style={ { fontSize: '0.55rem', color: '#fff', fontWeight: 'bold' } }>Pit 1 & 3</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.65rem' } }>Collect All</span>
+                                        </div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 12: Accumulation Bonus</h5>
+                                    <p className="text-muted small">Across 3 consecutive pits with the middle one at value 0, current turn active player collects seeds from the first and last one , if last drop fall on the first pit after that it has value == pasu rule and last one is nonempty. This overrides the standard Accumulation Rule.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 13: Dual Capture */}
+                            {ruleStep === 13 && (
+                                <div>
+                                    <div className="d-flex align-items-center justify-content-center gap-1 mb-2">
+                                        <div className="rule-honeycomb-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 1</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>3</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-secondary text-white">
+                                            <span style={ { fontSize: '0.55rem', color: '#fff', fontWeight: 'bold' } }>Pit 2</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.7rem' } }>0</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-secondary text-white">
+                                            <span style={ { fontSize: '0.55rem', color: '#fff', fontWeight: 'bold' } }>Pit 3</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.7rem' } }>0</span>
+                                        </div>
+                                        <span className="fs-5 fw-bold mx-1">➔</span>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-success text-white">
+                                            <span style={ { fontSize: '0.55rem', color: '#fff', fontWeight: 'bold' } }>Pit 1</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.65rem' } }>Pit Owner Collect</span>
+                                        </div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 13: Dual Capture</h5>
+                                    <p className="text-muted small">Across 3 consecutive pits with the middle and last ones having value 0, collect seeds from the first pit by the pit owner.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 14: Restriction Dual Capture */}
+                            {ruleStep === 14 && (
+                                <div>
+                                    <div className="d-flex align-items-center justify-content-center gap-1 mb-2">
+                                        <div className="rule-honeycomb-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 1</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>1</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-secondary text-white">
+                                            <span style={ { fontSize: '0.55rem', color: '#fff', fontWeight: 'bold' } }>Pit 2</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.7rem' } }>0</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 3</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>5</span>
+                                        </div>
+                                        <span className="fs-5 fw-bold mx-1">➔</span>
+                                        <div className="rule-honeycomb-pit shadow-sm bg-warning text-dark">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Pit 3 Only</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.65rem' } }>Collect Last</span>
+                                        </div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 14: Restriction Dual Capture</h5>
+                                    <p className="text-muted small">Across 3 consecutive pits where the middle is 0, the last has a non-zero value, and the first has a value of 1, collect seeds from the last pit alone. The first pit doesn't pass the accumulation rule.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 15: King's Pit Exception */}
+                            {ruleStep === 15 && (
+                                <div>
+                                    <div className="d-flex justify-content-center align-items-center gap-2 mb-2">
+                                        <div className="rule-honeycomb-pit silver-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>KingPit</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>👑</span>
+                                        </div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 15: King's Pit Exception</h5>
+                                    <p className="text-muted small">The Accumulation Rule, Accumulation Bonus, and Dual Capture Rule do not apply to King's Pits.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 16: Round Transition */}
+                            {ruleStep === 16 && (
+                                <div>
+                                    <div className="d-flex justify-content-center align-items-center gap-1 mb-2">
+                                        <div className="rule-honeycomb-pit shadow-sm bg-secondary text-white">
+                                            <span style={ { fontSize: '0.55rem', color: '#fff', fontWeight: 'bold' } }>All Pits</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.7rem' } }>0 (Empty)</span>
+                                        </div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 16: Round Transition</h5>
+                                    <p className="text-muted small">Triggered when current turn hits a state where all active pits are completely empty.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 17: Board Reset */}
+                            {ruleStep === 17 && (
+                                <div>
+                                    <div className="fs-1 mb-2">🔄</div>
+                                    <h5 className="fw-bold text-dark">Rule 17: Board Reset</h5>
+                                    <p className="text-muted small">Initiate a roundup and take the seeds to refill the pits across all rows for the next phase of the game.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 18: Game Over */}
+                            {ruleStep === 18 && (
+                                <div>
+                                    <div className="d-flex justify-content-center align-items-center gap-1 mb-2">
+                                        <div className="d-flex gap-1">
+                                            <div className="rule-honeycomb-pit shadow-sm bg-warning"><span className="fw-bold" style={ { fontSize: '0.7rem' } }>3</span></div>
+                                            <div className="rule-honeycomb-pit shadow-sm bg-warning"><span className="fw-bold" style={ { fontSize: '0.7rem' } }>2</span></div>
+                                            <div className="rule-honeycomb-pit shadow-sm bg-warning"><span className="fw-bold" style={ { fontSize: '0.7rem' } }>4</span></div>
+                                            <div className="rule-honeycomb-pit shadow-sm bg-warning"><span className="fw-bold" style={ { fontSize: '0.7rem' } }>1</span></div>
+                                            <div className="rule-honeycomb-pit shadow-sm bg-warning"><span className="fw-bold" style={ { fontSize: '0.7rem' } }>3</span></div>
+                                        </div>
+                                    </div>
+                                    <div className="text-primary small fw-bold mb-1">Side 0: 5 Full Pits (Active)</div>
+                                    <div className="text-danger small fw-bold mb-2">Side 1: No Pits / Insufficient Seeds (Game Over)</div>
+                                    <h5 className="fw-bold text-dark">Rule 18: Game Over</h5>
+                                    <p className="text-muted small">During round transition, any player not having enough at least to fill a pit results in game over.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 19: Sowing Limit */}
+                            {ruleStep === 19 && (
+                                <div>
+                                    <div className="d-flex justify-content-center align-items-center gap-1 mb-2">
+                                        <div className="rule-honeycomb-pit shadow-sm border border-warning">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>Normal</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.85rem', color: '#451a03' } }>Drop</span>
+                                        </div>
+                                        <div className="rule-honeycomb-pit silver-pit shadow-sm bg-light">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>King'z</span>
+                                            <span className="fw-bold text-danger" style={ { fontSize: '0.7rem' } }>Scoop X</span>
+                                        </div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 19: Sowing Limit</h5>
+                                    <p className="text-muted small">During sowing, if the last drop is in a pit just before a King's pit, the turn ends there with a scoop action on the King's pit.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 20: Fractional Capture */}
+                            {ruleStep === 20 && (
+                                <div>
+                                    <div className="d-flex align-items-center justify-content-center gap-1 mb-2">
+                                        <div className="rule-honeycomb-pit silver-pit shadow-sm">
+                                            <span style={ { fontSize: '0.55rem', color: '#78350f', fontWeight: 'bold' } }>KingPit</span>
+                                            <span className="fw-bold" style={ { fontSize: '0.7rem' } }>Share 3:1</span>
+                                        </div>
+                                        <span className="fs-5 fw-bold mx-1">➔</span>
+                                        <div className="badge bg-primary p-2">Side 0 (3) / Side 1 (1)</div>
+                                    </div>
+                                    <h5 className="fw-bold text-dark">Rule 20: Fractional Capture</h5>
+                                    <p className="text-muted small">King's pit cannot be captured like normal pits, but we get a share for the captured count during round end (round transition) which is not carry-forwarded.</p>
+                                </div>
+                            )}
+
+                            {/* Rule 21: Final Acceptance Step */}
+                            {ruleStep === 21 && (
+                                <div>
+                                    <div className="fs-1 mb-2">👑</div>
+                                    <h5 className="fw-bold text-dark">Final Rule Check & Acceptance</h5>
+                                    <p className="text-muted small">Review all mechanics including fractional shares, sowing limits, and game over conditions. Click Accept below to proceed into the arena.</p>
+                                </div>
+                            )}
+
+                        </div>
+
+                        <div className="text-muted small mb-3">Rule Step {ruleStep} of {maxRules}</div>
+
+                        {/* Navigation Footer */}
+                        <div className="d-flex justify-content-between align-items-center">
+                            <button
+                                className="btn btn-outline-secondary px-4"
+                                disabled={ruleStep === 1}
+                                onClick={() => setRuleStep(prev => Math.max(prev - 1, 1))}
+                            >
+                                Back
+                            </button>
+
+                            {ruleStep < maxRules ? (
+                                <button
+                                    className="btn btn-warning px-4 fw-bold text-dark shadow-sm"
+                                    onClick={() => setRuleStep(prev => Math.min(prev + 1, maxRules))}
+                                >
+                                    Next
+                                </button>
+                            ) : (
+                                <button
+                                    className="btn btn-success px-4 fw-bold shadow"
+                                    onClick={submitNewGame}
+                                >
+                                    Accept & Proceed
+                                </button>
+                            )}
                         </div>
                     </div>
                 )}
@@ -433,7 +873,7 @@
                                                 overflow: hidden;
                                             }
                                             .honeycomb-pit.silver-pit {
-                                                background-color: #fee08a !important;
+                                                background-color: #fef08a !important;
                                                 border: 3px solid #94a3b8 !important;
                                                 filter: drop-shadow(0 0 4px rgba(148, 163, 184, 0.9));
                                             }
