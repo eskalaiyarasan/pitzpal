@@ -75,9 +75,10 @@ def resign(yy, player):
 
 
 def updateReport(y, out, player):
+    my_ret = False
     is_win = False
     if out["Status"] == "done" and y["Status"] == "active":
-        print(y)
+        my_ret = True
         store = out["Board"]["Store"]
         store.sort(key=lambda obj: list(obj.values())[0], reverse=True)
         win_side = int(list(store[0].items())[0][0])
@@ -90,4 +91,4 @@ def updateReport(y, out, player):
             "EndType": "graceful",
             "Winner": {"Player": result, "Side": win_side},
         }
-    return is_win
+    return [my_ret ,is_win]

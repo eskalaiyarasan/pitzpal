@@ -30,7 +30,8 @@
     <button type="submit">{% trans "Login" %}</button>
 </form>
 <hr />
-<p>{% trans "Don't have an account?" %} <a href="{% url 'signup' %}">{% trans "Sign up here" %}</a></p>
+<p>{% trans "Don't have an account?" %}  <span style="font-size: 1.5em; font-weight: bold;">
+    <a href="{% url 'signup' %}">{% trans "Sign up here" %}</a></span> </p>
 <p>{% trans "About-us" %} <a href="{% url 'about_us' %}">{% trans "About-us" %}</a></p>
 </body>
 </html>

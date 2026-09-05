@@ -93,7 +93,8 @@ def toss_action(request, game_id):
 def update_stat_at_end(request, y, out):
     logger.info(f"enter {request}")
     is_win = move.updateReport(y, out, str(request.user.username))
-    request.user.complete_game(is_win=is_win, difficulty=y["Level"]["Value"])
+    if is_win[0]:
+        request.user.complete_game(is_win=is_win[1], difficulty=y["Level"]["Value"])
 
 
 def make_comp_move(request, game_id):

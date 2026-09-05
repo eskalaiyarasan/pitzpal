@@ -10,6 +10,7 @@ djangorestframework = "*"
 channels = "*"
 jsonschema = "*"
 markupsafe = "*"
+gunicorn = "*"
 
 [dev-packages]
 
